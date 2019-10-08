@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+    <meta charset="utf-8">
+    <title>Marker Clustering</title>
+    <style>
+      /* Always set the map height explicitly to define the size of the div
+       * element that contains the map. */
+      #map {
+        height: 100%;
+      }
+      /* Optional: Makes the sample page fill the window. */
+      html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="map"></div>
+    <script>
+ 
+      function initMap() {
+ 
+        var map = new google.maps.Map(document.getElementById('map'), {
+          zoom: 15,
+          center: {lat: 36.361909, lng: 127.378964}
+        });
+        //36.361909, 127.378964
+        // Create an array of alphabetical characters used to label the markers.
+        var labels = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        google.maps.event.addListener(map, 'click', function(mouseEvent) {        
+              // 클릭한 위치에 마커를 표시합니다 
+
+              addMarker(mouseEvent.latLng);
+              
+        });
+
+        // Add some markers to the map.
+        // Note: The code uses the JavaScript Array.prototype.map() method to
+        // create an array of markers based on a given "locations" array.
+        // The map() method here has nothing to do with the Google Maps API.
+        var markers = locations.map(function(location, i) {
+          var drag = new google.maps.Marker({
+            position: location,
+            label: labels[i % labels.length]
+          });
+
+          drag.setDraggable(true)           //드래그 하는 부분
+          // markers.setMap(drag);
+          return drag
+        });
+        
+        
+        // Add a marker clusterer to manage the markers.
+        var markerCluster = new MarkerClusterer(map, markers,
+            {imagePath: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m'});
+      }
+      
+      function addMarker(position) {
+          console.log(position);
+          var a = {lat:36.36, lng:127.378}
+          locations.push(a);
+      }
+
+      var locations = [
+        {lat: 36.361909, lng: 127.378964},
+        {lat: -33.718234, lng: 150.363181}
+      ]
+      // markers.setDraggable(true);
+    </script>
+    <script src="https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/markerclusterer.js">
+    </script>
+    <script async defer
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB9TquLrtNi4kyXEQypxdv3psrKdrt6FMI&callback=initMap">
+    </script>
+  </body>
+</html>

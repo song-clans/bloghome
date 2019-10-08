@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <% include ../partials/head %>
+</head>
+<body>
+  <div id ="div_root">
+    <div style="border: 1px solid blue; padding:60px;"> 대문사진 </div>
+    <div style="border: 1px solid gold; width:20%; height:300px; float:left;"> 메뉴바 </div>
+    <%if(name == "0"){ %>
+      <div class="login" style="cursor:pointer" align ="right" onclick="return but_click()">로그인/회원가입</div>
+    <% }else{ %>
+      <div class="login_name" align ="right"><%= name.user[0] %>님
+        <form action ="/logout" method="POST">
+          <button type="submit">Logout</button>
+        </form>
+        <%if(login == name.user[1]){ %>
+            <button type="button" onclick="return but_click2()">블로그 수정</button>
+        <% } %>
+      </div>
+    <% } %>
+    <!-- <div class="login2" style="cursor:pointer" align ="left" onclick="top.location.href='/blog_login/12'">로그인/회원가입</div> -->
+    <!-- <div align="center"><h1>오른쪽</h1></div>
+    <div style="border: 1px solid gold; padding:60px;"> 사진 </div>
+    <div style="border: 1px solid red; padding:60px;"> </div>
+    <div> </div>
+    <div> </div>
+    <div> </div>
+    <div> </div> -->
+    <button class="btn_show" style="padding:3px">show</button>
+    <button class="btn_hide" style="padding:3px">hide</button>
+
+<div class="btn_word">Hello world!!!</div>
+
+
+
+</body>
+
+<script type="text/javascript" src="http://code.jquery.com/jquery-3.2.0.min.js" ></script>
+<script type="text/javascript">
+$(function(){
+  $('.btn_show').click(function(){
+    $('.btn_word').show();
+  });
+  $('.btn_hide').click(function(){
+    $('.btn_word').hide();
+  });
+});
+</script>
+<script>
+      function but_click(){
+        var url = location.pathname
+        location.href = "/blog_login"+url
+      }
+      function but_click2(){
+        var url = location.pathname
+        var re_url = url.replace("/blog_login","")
+        re_url = re_url.replace("/save_ok","")
+        location.href = re_url+"/edit"
+      }
+   </script>
+
+</html>

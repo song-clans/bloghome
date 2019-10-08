@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+
+</head>
+<body>
+    <div style="border: 1px solid blue; padding:60px;"> 대문사진 </div>
+    <div class="login" style="cursor:pointer" align ="right" onclick="return click_button()">로그인/회원가입</div>
+    <!-- <div class="login2" style="cursor:pointer" align ="left" onclick="top.location.href='/blog_login/12'">로그인/회원가입</div> -->
+    <div align="center"><h1>오른쪽</h1></div>
+</body>
+
+<script>
+    function click_button(){
+        var currentUrl = document.referrer;
+        var urlArray = currentUrl.split('/');
+        
+        // parent.blog_right.location.href = 'http://localhost:8080/blog_login';
+        parent.blog_right.location.href = `http://localhost:8080/blog_login/${urlArray[3]}/${urlArray[4]}/${urlArray[5]}`;
+    }
+</script>
+
+</html>

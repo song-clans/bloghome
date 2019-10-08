@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+    <head>
+    </head>
+    <body>
+            <article>
+                <form method="POST">
+                    <input type="text" name="username" />
+                    <input type="password" name="password"/>
+                    <input type = "text" id ="home_url" name ="url" value="<%=url%>" style="display:none" />
+                    <!-- <p id="home_url" style="display:none"></p> -->
+                    <input type="submit"  value="Login"/>
+                    <!-- <div id ="url" style="display:none"></div> -->
+                </form>                    
+            </article>
+            <!-- <form action="/blog_login/:url/:url2/:url3" method="POST" name="frm_login" id="frm_login">
+                <input type="text" name="username" />
+                <input type="password" name="password"/>
+                <input type="submit"  value="Login"/>
+            </form> -->
+
+            <input type ="button" value ="회원가입" onclick = "location.href='/sign_up'">
+    </body>
+    <!-- <script>
+    function back_url(){
+        var url = location.href
+        document.getElementById("home_url").value = url
+
+        // var urlArray = url.split('/');
+        // var backurl = `http://localhost:8080/${urlArray[2]}/${urlArray[3]}/${urlArray[4]}`
+        // console.log(backurl)
+     }
+     back_url()
+    </script> -->
+</html>

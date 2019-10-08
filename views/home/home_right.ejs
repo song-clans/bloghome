@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+</head>
+<body>
+    
+    <div align="right"><a href="home_login">로그인/회원가입</a></div>
+    <ol>
+        <% for(var i=0; i < data.length; i++){ %>
+            <p>
+                <a href ="<%=data[i].link %>" target = "home_right">
+                    <img src = "<%=data[i].addr %>" />
+                </a>
+            </p>
+        <% } %>
+    </ol>
+</body>
+<script>
+    function reload(){
+        parent.home_left.location.reload(true);
+    }
+    reload()
+</script>
+</html>

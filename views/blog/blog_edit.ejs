@@ -1,0 +1,110 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<head>
+        <% include ../partials/head %>
+
+<script type="text/javascript">
+
+       function previewImage(targetObj, previewId) {
+
+        var preview = document.getElementById(previewId); //div id  
+        var ua = window.navigator.userAgent;
+
+        if (ua.indexOf("MSIE") > -1) {//ie일때
+
+            targetObj.select();
+
+            try {
+                var src = document.selection.createRange().text; // get file full path
+                var ie_preview_error = document
+                        .getElementById("ie_preview_error_" + previewId);
+
+                if (ie_preview_error) {
+                    preview.removeChild(ie_preview_error); //error가 있으면 delete
+                }
+
+                var img = document.getElementById(previewId); //이미지가 뿌려질 곳
+   
+                img.style.filter = "progid:DXImageTransform.Microsoft.AlphaImageLoader(src='"+ src + "', sizingMethod='scale')";
+            } catch (e) {
+                if (!document.getElementById("ie_preview_error_" + previewId)) {
+                    var info = document.createElement("<p>");
+                    info.id = "ie_preview_error_" + previewId;
+                    info.innerHTML = "a";
+                    preview.insertBefore(info, null);
+                }
+            }
+        } else { //ie가 아닐때
+            var files = targetObj.files;
+            for ( var i = 0; i < files.length; i++) {
+
+                var file = files[i];
+
+                var imageType = /image.*/; //이미지 파일일경우만.. 뿌려준다.
+                if (!file.type.match(imageType))
+                    continue;
+
+                var prevImg = document.getElementById("prev_" + previewId); //이전에 미리보기가 있다면 삭제
+                if (prevImg) {
+                    preview.removeChild(prevImg);
+                }
+
+                var img = document.createElement("img");
+                img.id = "prev_" + previewId;
+                img.classList.add("obj");
+                img.file = file;
+                img.style.width = '100%'; //기본설정된 div의 안에 뿌려지는 효과를 주기 위해서 div크기와 같은 크기를 지정해준다.
+                img.style.height = '180px';
+               
+                preview.appendChild(img);
+
+                if (window.FileReader) { // FireFox, Chrome, Opera 확인.
+                    var reader = new FileReader();
+                    reader.onloadend = (function(aImg) {
+                        return function(e) {
+                            aImg.src = e.target.result;
+                        };
+                    })(img);
+                    reader.readAsDataURL(file);
+                } else { // safari is not supported FileReader
+                    //alert('not supported FileReader');
+                    if (!document.getElementById("sfr_preview_error_"
+                            + previewId)) {
+                        var info = document.createElement("p");
+                        info.id = "sfr_preview_error_" + previewId;
+                        info.innerHTML = "not supported FileReader";
+                        preview.insertBefore(info, null);
+                    }
+                }
+            }
+        }
+    }
+    function clik_eve(){
+        var fileupload = document.getElementById("file_sel");
+        var but = document.getElementById("previewId");
+        but.onclick = function () {
+            fileupload.click();
+        };
+    }
+</script>
+
+</head>
+<body>
+    <form action="<%=re_url%>" method="post"  enctype="multipart/form-data" id="upload_form" runat="server">
+        <input type="file" id="file_sel" name ="file_sel" onchange="previewImage(this,'previewId')" style="display:none" accept="image/*">
+
+        <div id ="div_root">
+            <div id='previewId' style="border: 1px solid blue; cursor:pointer; height:180px; width:100%; text-align: center" onclick="clik_eve()"></div>
+            <div id ='menubar-basicid' name='menubar-basicname' style="border: 1px solid gold; width:20%; height:300px; float:left;">
+                <div id='menu-promiseid' name='menu-promisename' align="center" style='cursor:pointer;'>약속</div>
+                <div id='menu-importantid' name='menu-importantname' align="center" style='cursor:pointer;'>중요한글</div>
+                <div id='menu-reviewid' name='menu-reviewname' align="center" style='cursor:pointer;'>리뷰글</div>
+
+                <input type = "text" id ="blog_url" name ="url" value="<%=url%>" style="display:none" />
+        </div>
+
+        <input type="submit" value="올리기">
+
+    </form>
+
+</body>
+</html> 

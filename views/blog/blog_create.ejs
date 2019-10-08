@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+
+</head>
+<body>
+    <form name="blog_create" action="/blog_create" method="post">
+        <div>
+            <td>블로그 이름</td>
+            <td><input type="text" id ="formsubmit" name="blog_name" /></td>
+        </div>
+        <div>
+            <input type="submit" id="<%=name.user[1] %>" onclick="return click_button()" name="submit" value="완료" />
+        </div>
+    </form>
+
+    <script>
+        function click_button(){
+            
+            var urlparam = document.getElementById("formsubmit").value
+
+            var urlblogname = document.getElementsByName('submit')[0].id
+            
+            var message = window.confirm("블로그 생성 하시겠습니까?");
+
+            if(message === false){
+
+            }else{
+                // parent.opener.location.href = 'http://localhost:8080/blog_home';
+                // parent.self.close();
+                // parent.location.href = `http://localhost:8080/blog/${urlparam}/${urlblogname}`
+                // parent.home_right.location.href = 'http://localhost:8080/blog_bottom';
+                // parent.home_left.location.href = 'http://localhost:8080/home_left';
+                // parent.home_top.location.href = 'http://localhost:8080/blog_top';
+            }
+            return message
+        }
+    </script>
+
+</body>
+</html>

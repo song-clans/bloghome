@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+</head>
+<body>
+    <div align="right"><%= name.user[0] %>
+    <form action ="/home_suc_right" method="POST">
+        <button type="submit">Logout</button>
+    </form>
+    </div>
+    <% if(data_yn =="Y"){ %>
+        <div align = "right">
+            <input type = "button" value="블로그 가기" onclick="parent.location.href = '<%= blog_url %>'">
+        </div>
+    <% } else{ %>
+        <div align = "right">
+            <!-- <button type = "submit"><a href="/blog_create">블로그 만들기</button></a> -->
+            <input type="button" value="블로그 만들기" onclick="location.href='/blog_create' ">
+        </div>
+    <% } %>
+    <ol>
+        <% for(var i=0; i < data.length; i++){ %>
+            <p>
+                <a href ="<%=data[i].link %>" target = "home_right">
+                    <img src = "<%=data[i].addr %>" />
+                </a>
+            </p>
+        <% } %>
+    </ol>
+    <script>
+        function reload(){
+            parent.home_left.location.reload(true);
+        }
+        reload()
+    </script>
+</body>
+</html>

@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+
+    <head>
+        <% include ../partials/head %>
+    </head>
+
+    <body>
+        <div class="row">
+            <div class="col-3">
+                <div class="nav flex-column nav-pills" id="v-pills-tab" role="tablist" aria-orientation="vertical" style="border: 1px solid #48BAE4; height: auto; width: 200px;">
+                    <a class="nav-link active" id="v-pills-home-tab" data-toggle="pill" onclick="return click_button()" role="tab" aria-controls="v-pills-home" aria-selected="flase" target="home_right">Home</a>
+                    <a class="nav-link active" id="v-pills-settings-tab" data-toggle="pill" href="#v-pills-settings" role="tab" aria-controls="v-pills-settings" aria-selected="false">Profile</a>
+                    <a class="nav-link active" id="v-pills-messages-tab" data-toggle="pill" href="#v-pills-messages" role="tab" aria-controls="v-pills-messages" aria-selected="false">Messages</a>
+                    <a class="nav-link active" id="v-pills-settings-tab" data-toggle="pill" href="#v-pills-settings" role="tab" aria-controls="v-pills-settings" aria-selected="false">Settings</a>
+                </div>
+            </div>
+        </div>
+    </body>
+
+    <script>
+            function click_button(){
+                parent.location.href = 'http://localhost:8080/home';
+            }
+        </script>
+</html>
