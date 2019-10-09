@@ -2,10 +2,16 @@
 const express = require('express');
 const mysql = require('mysql');
 const router = express.Router();
+const dot = require('dotenv');
+dot.config();
 
-
-
-
+var db = mysql.createConnection({
+    host : process.env.DB_HOST,
+    port : process.env.DB_PORT,
+    user : process.env.DB_USER,
+    password : process.env.DB_PASSWORD,
+    database : 'test',
+})
 
 
 router.get('/blog_create', (req, res)=>{
@@ -20,14 +26,14 @@ router.get('/blog/:user_name/:blog_name/',(req,res)=>{
     db.query(sql,params,(err,row)=>{
         if(row[0]){
             if(session){
-                res.render('blog/blog_basic',{name:session,login:params});
+                res.render('blog/blog_basic',{name:session,login:params,image_url:row[0].image_url,x_point:row[0].image_xpoint});
             }else{
-                res.render('blog/blog_basic',{name:"0",login:params});
+                res.render('blog/blog_basic',{name:"0",login:params,image_url:row[0].image_url,x_point:row[0].image_xpoint});
             }
         }else{
             // console.log(err);
-            res.render('blog/blog_basic',{name:"0"});
-            // res.send('잘못된 접근입니다.');
+            // res.render('blog/blog_basic',{name:"0",image_url:row[0].image_url,x_point:row[0].image_xpoint});
+            res.send('잘못된 접근입니다.');
         }
     })
 })

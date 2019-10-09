@@ -6,10 +6,17 @@ var passport = require('passport')
 var LocalStrategy = require('passport-local').Strategy;
 const router = express.Router();
 const crypto = require('crypto');
-
+const dot = require('dotenv');
+dot.config();
 var app = express();
 
-
+var db = mysql.createConnection({
+    host : process.env.DB_HOST,
+    port : process.env.DB_PORT,
+    user : process.env.DB_USER,
+    password : process.env.DB_PASSWORD,
+    database : 'test',
+})
 
 
 app.use(cookieParser());
@@ -170,7 +177,7 @@ router.route('/blog_login/:url1/:url2/:url3')
             if(err){
                 console.log("blog_talbe",err);
             }
-            res.render('blog/blog_basic',{name:session,login:log_ok});
+            res.render('blog/blog_basic',{name:session,login:log_ok,image_url:row[0].image_url,x_point:row[0].image_xpoint});
         })
     }else{
         res.render('login/blog_login',{url:req.url})

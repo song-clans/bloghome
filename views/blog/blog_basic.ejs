@@ -5,7 +5,7 @@
 </head>
 <body>
   <div id ="div_root">
-    <div style="border: 1px solid blue; padding:60px;"> 대문사진 </div>
+    <div id='blog_top' style="border: 1px solid blue; cursor:pointer; height:180px; width:100%; text-align: center; overflow: hidden;" ><img src='<%=image_url%>' style = "width:100%; position : relative; top: <%=x_point %>" /></div>
     <div style="border: 1px solid gold; width:20%; height:300px; float:left;"> 메뉴바 </div>
     <%if(name == "0"){ %>
       <div class="login" style="cursor:pointer" align ="right" onclick="return but_click()">로그인/회원가입</div>
@@ -58,6 +58,11 @@ $(function(){
         re_url = re_url.replace("/save_ok","")
         location.href = re_url+"/edit"
       }
+      // window.onload = function() {
+      //   var url = location.pathname
+      //   var re_url = url.replace("/save_ok","")
+      //   location.href = re_url
+      // };
    </script>
 
 </html>

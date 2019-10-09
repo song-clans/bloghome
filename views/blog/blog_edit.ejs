@@ -3,8 +3,60 @@
         <% include ../partials/head %>
 
 <script type="text/javascript">
+    var img_L = 0;
+    var img_T = 0;
+    var targetObj;
+    var timer;
+    var istrue = false;
 
-       function previewImage(targetObj, previewId) {
+    function mouse_onclick(e){
+        startDrag(e,this)
+    }
+
+    // function getLeft(o){
+    //     return parseInt(o.style.left.replace('px', ''));
+    // }
+    function getTop(o){
+        return parseInt(o.style.top.replace('px', ''));
+    }
+    function startDrag(e, obj){
+
+        targetObj = obj;
+        var e_obj = window.event? window.event : e;
+        // img_L = getLeft(obj) - e_obj.clientX;
+        img_T = getTop(obj) - e_obj.clientY;
+
+        document.onmousemove = moveDrag;
+        document.onmouseup = stopDrag;
+        if(e_obj.preventDefault)e_obj.preventDefault();
+    }
+    function moveDrag(e){
+        var e_obj = window.event? window.event : e;
+        // var dmvx = parseInt(e_obj.clientX + img_L);
+        var dmvy = parseInt(e_obj.clientY + img_T);
+        // targetObj.style.left = dmvx +"px";
+        targetObj.style.top = dmvy +"px";
+        
+        return false;
+    }
+
+    function stopDrag(){
+        const target = document.getElementById('prev_previewId');
+
+        // const clientRect = target.getBoundingClientRect(); // DomRect 구하기 (각종 좌표값이 들어있는 객체)
+        // const relativeTop = clientRect.top; // Viewport의 시작지점을 기준으로한 상대좌표 Y 값.
+        // const scrolledTopLength = window.pageYOffset;
+        // const absoluteTop = scrolledTopLength + relativeTop;
+        // document.getElementById("image_xpoint").value = absoluteTop;  좌표 절대값 구하는법
+        
+        document.getElementById("image_xpoint").value = targetObj.style.top;
+        document.getElementById("image_xpoint2").value = targetObj.style.top;
+
+        document.onmousemove = null;
+        document.onmouseup = null;
+    }
+
+    function previewImage(targetObj, previewId) {
 
         var preview = document.getElementById(previewId); //div id  
         var ua = window.navigator.userAgent;
@@ -52,9 +104,15 @@
                 img.id = "prev_" + previewId;
                 img.classList.add("obj");
                 img.file = file;
-                img.style.width = '100%'; //기본설정된 div의 안에 뿌려지는 효과를 주기 위해서 div크기와 같은 크기를 지정해준다.
-                img.style.height = '180px';
-               
+                img.style.position = 'relative';
+                // img.style.left = '0px';
+                img.style.top = '0px';
+                img.style.width = '100%';
+                // img.style.max-width = '100%';
+                img.style.cursor = 'pointer';
+                img.style.cursor = 'hand';
+                img.style.overflow = 'hidden';
+                img.addEventListener("mousedown", mouse_onclick, false);
                 preview.appendChild(img);
 
                 if (window.FileReader) { // FireFox, Chrome, Opera 확인.
@@ -81,29 +139,36 @@
     function clik_eve(){
         var fileupload = document.getElementById("file_sel");
         var but = document.getElementById("previewId");
-        but.onclick = function () {
+        but.ondblclick = function () {
             fileupload.click();
         };
     }
+    // window.onload = function() {
+        
+    // };
+
 </script>
 
 </head>
 <body>
     <form action="<%=re_url%>" method="post"  enctype="multipart/form-data" id="upload_form" runat="server">
         <input type="file" id="file_sel" name ="file_sel" onchange="previewImage(this,'previewId')" style="display:none" accept="image/*">
-
+        <input type = "text" id ="image_xpoint" name ="image_xpoint" style="display:none" value ="<%=x_point %>" />
         <div id ="div_root">
-            <div id='previewId' style="border: 1px solid blue; cursor:pointer; height:180px; width:100%; text-align: center" onclick="clik_eve()"></div>
+            <div id='previewId' style="border: 1px solid blue; cursor:pointer; height:180px; width:100%; text-align: center; overflow: hidden;" ondblclick="clik_eve()">
+
+            <img id ="prev_previewId" class="obj" src='<%=image_url%>' style = "width:100%; position : relative; top: <%=x_point %>;" onmousedown='startDrag(event,this)' />
+
+            </div>
+            <input type = "text" id ="image_xpoint2" name ="image_xpoint2" style="display:none" value ="<%=x_point %>" />
             <div id ='menubar-basicid' name='menubar-basicname' style="border: 1px solid gold; width:20%; height:300px; float:left;">
                 <div id='menu-promiseid' name='menu-promisename' align="center" style='cursor:pointer;'>약속</div>
                 <div id='menu-importantid' name='menu-importantname' align="center" style='cursor:pointer;'>중요한글</div>
                 <div id='menu-reviewid' name='menu-reviewname' align="center" style='cursor:pointer;'>리뷰글</div>
-
+                
                 <input type = "text" id ="blog_url" name ="url" value="<%=url%>" style="display:none" />
         </div>
-
         <input type="submit" value="올리기">
-
     </form>
 
 </body>
