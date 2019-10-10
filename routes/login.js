@@ -156,7 +156,6 @@ router.route('/home_login')
 
 router.route('/blog_login/:url1/:url2/:url3')
 .get((req,res)=>{
-    
     var session_err = req.session.flash;
 
     if(session_err){
@@ -167,25 +166,14 @@ router.route('/blog_login/:url1/:url2/:url3')
             // res.send("아이디 틀림")
         }
     }   //오류 부분
-    var session = req.session.passport
-
-    if (session){
-        var log_ok = req.params.url2
-        sql = "select * from blog_table where id =?"
-        var params = [session.user[1]]
-        db.query(sql,params,(err,row)=>{
-            if(err){
-                console.log("blog_talbe",err);
-            }
-            res.render('blog/blog_basic',{name:session,login:log_ok,image_url:row[0].image_url,x_point:row[0].image_xpoint});
-        })
-    }else{
-        res.render('login/blog_login',{url:req.url})
-    }
+    
+    res.render('login/blog_login',{url:req.url})
 })
 
 router.post('/blog_login/:url1/:url2/:url3',passport.authenticate('local'),(req,res)=>{
-    res.redirect(req.body.url);
+    var url = req.body.url
+    var re_url = url.replace("/blog_login","")
+    res.redirect(re_url);
 })
 
 

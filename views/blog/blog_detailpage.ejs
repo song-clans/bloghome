@@ -25,6 +25,8 @@
         <% } %>
       </div>
     <% } %>
+    <button class="btn_show" style="padding:3px">show</button>
+    <button class="btn_hide" style="padding:3px">hide</button>
 
 <div class="btn_word">Hello world!!!</div>
 
@@ -34,6 +36,16 @@
 
 <script type="text/javascript" src="http://code.jquery.com/jquery-3.2.0.min.js" ></script>
 <script type="text/javascript">
+$(function(){
+  $('.btn_show').click(function(){
+    $('.btn_word').show();
+  });
+  $('.btn_hide').click(function(){
+    $('.btn_word').hide();
+  });
+});
+</script>
+<script>
       function but_click(){
         var url = location.pathname
         location.href = "/blog_login"+url
@@ -51,7 +63,7 @@
       function menu_click(i){
         // console.log(document.getElementById("menu"+i).innerText)
         // console.log(location.pathname)
-        location.href = location.pathname+"/detail/"+ document.getElementById("menu"+i).innerText
+        location.href = location.pathname+"/"+ document.getElementById("menu"+i).innerText
       }
    </script>
 

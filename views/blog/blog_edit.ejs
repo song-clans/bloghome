@@ -2,6 +2,8 @@
 <head>
         <% include ../partials/head %>
 
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
 <script type="text/javascript">
     var img_L = 0;
     var img_T = 0;
@@ -20,7 +22,6 @@
         return parseInt(o.style.top.replace('px', ''));
     }
     function startDrag(e, obj){
-
         targetObj = obj;
         var e_obj = window.event? window.event : e;
         // img_L = getLeft(obj) - e_obj.clientX;
@@ -50,7 +51,6 @@
         // document.getElementById("image_xpoint").value = absoluteTop;  좌표 절대값 구하는법
         
         document.getElementById("image_xpoint").value = targetObj.style.top;
-        document.getElementById("image_xpoint2").value = targetObj.style.top;
 
         document.onmousemove = null;
         document.onmouseup = null;
@@ -143,9 +143,20 @@
             fileupload.click();
         };
     }
-    // window.onload = function() {
-        
-    // };
+    function button_menuadd(){
+        var input = document.createElement("input");
+        var div_add = document.getElementById("menubarbasicid");
+        input.type = "text"
+        input.id = "menuaddid"
+        input.name = "menuaddname"
+        input.align = "center"
+        input.style.width ='100%'
+        input.value  = document.getElementById("add").value
+
+        document.getElementById("add").value = null;
+
+        div_add.appendChild(input);
+    }
 
 </script>
 
@@ -153,21 +164,23 @@
 <body>
     <form action="<%=re_url%>" method="post"  enctype="multipart/form-data" id="upload_form" runat="server">
         <input type="file" id="file_sel" name ="file_sel" onchange="previewImage(this,'previewId')" style="display:none" accept="image/*">
-        <input type = "text" id ="image_xpoint" name ="image_xpoint" style="display:none" value ="<%=x_point %>" />
+        <input type = "text" id ="image_xpoint" name ="image_xpoint" style="display:none" value ="<%=alldata.image_xpoint %>" />
         <div id ="div_root">
-            <div id='previewId' style="border: 1px solid blue; cursor:pointer; height:180px; width:100%; text-align: center; overflow: hidden;" ondblclick="clik_eve()">
+            <div id='previewId' style="cursor:pointer; height:180px; width:100%; text-align: center; overflow: hidden;" ondblclick="clik_eve()">
 
-            <img id ="prev_previewId" class="obj" src='<%=image_url%>' style = "width:100%; position : relative; top: <%=x_point %>;" onmousedown='startDrag(event,this)' />
+            <img id ="prev_previewId" class="obj" src='<%=alldata.image_url%>' style = "width:100%; position : relative; top: <%= alldata.image_xpoint %>;" onmousedown='startDrag(event,this)' />
 
             </div>
-            <input type = "text" id ="image_xpoint2" name ="image_xpoint2" style="display:none" value ="<%=x_point %>" />
-            <div id ='menubar-basicid' name='menubar-basicname' style="border: 1px solid gold; width:20%; height:300px; float:left;">
-                <div id='menu-promiseid' name='menu-promisename' align="center" style='cursor:pointer;'>약속</div>
-                <div id='menu-importantid' name='menu-importantname' align="center" style='cursor:pointer;'>중요한글</div>
-                <div id='menu-reviewid' name='menu-reviewname' align="center" style='cursor:pointer;'>리뷰글</div>
-                
-                <input type = "text" id ="blog_url" name ="url" value="<%=url%>" style="display:none" />
-        </div>
+            <div id ='menubarbasicid' name='menubarbasicname' style=" width:20%; height:300px; float:left;">
+                <input type="text" id='menuaddid' name='menuaddname' align="center" style='width:100%' value ="약속" />
+                <input type="text" id='menuaddid' name='menuaddname' align="center" style='width:100%' value ="중요한글" />
+                <input type="text" id='menuaddid' name='menuaddname' align="center" style='width:100%' value ="리뷰글" />
+            </div>
+            <input type = "text" id ="blog_url" name ="url" value="<%=url%>" style="display:none" />
+            <form>
+                <input id ="add">
+                <input type="button" id ="menuadd" onclick = "button_menuadd()" value="메뉴 추가" />
+            </form>
         <input type="submit" value="올리기">
     </form>
 

@@ -19,6 +19,7 @@ router.get('/blog_create', (req, res)=>{
     res.render('blog/blog_create',{name:session});
 });
 
+
 router.get('/blog/:user_name/:blog_name/',(req,res)=>{
     var session = req.session.passport
     var sql = 'select * from blog_table where id =?';
@@ -26,9 +27,9 @@ router.get('/blog/:user_name/:blog_name/',(req,res)=>{
     db.query(sql,params,(err,row)=>{
         if(row[0]){
             if(session){
-                res.render('blog/blog_basic',{name:session,login:params,image_url:row[0].image_url,x_point:row[0].image_xpoint});
+                res.render('blog/blog_basic',{name:session,login:params,alldata:row[0]});
             }else{
-                res.render('blog/blog_basic',{name:"0",login:params,image_url:row[0].image_url,x_point:row[0].image_xpoint});
+                res.render('blog/blog_basic',{name:"0",login:params,alldata:row[0]});
             }
         }else{
             // console.log(err);
@@ -95,6 +96,25 @@ router.post('/blog_create', (req, res)=>{
         }
 
     }
+});
+
+router.get('/blog/:user_name/:blog_name/detail/:menu', (req, res)=>{
+    var session = req.session.passport
+    var sql = 'select * from blog_table where id =?';
+    var params = req.params.user_name
+    db.query(sql,params,(err,row)=>{
+        if(row[0]){
+            if(session){
+                res.render('blog/blog_detailpage',{name:session,login:params,alldata:row[0]});
+            }else{
+                res.render('blog/blog_detailpage',{name:"0",login:params,alldata:row[0]});
+            }
+        }else{
+            // console.log(err);
+            // res.render('blog/blog_basic',{name:"0",image_url:row[0].image_url,x_point:row[0].image_xpoint});
+            res.send('잘못된 접근입니다.');
+        }
+    })
 });
 
 module.exports = router;

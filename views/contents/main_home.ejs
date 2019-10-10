@@ -7,24 +7,26 @@
     <div id ="div_root">
         <div id ="div_top" class = "alert" role="alert"><h4 class="alert-heading" style="text-align: center">
             <h4 align = "center">TripCo</h4>
+        </div>
+        <div id ="div_login">
             <% if(name != "0"){ %>
-                <div align="right"><%= name.user[0] %>
+                <div><%= name.user[0] %>
                     <form action ="/logout" method="POST">
                         <button type="submit">Logout</button>
                     </form>
                 </div>
                     <% if(data_yn =="Y"){ %>
-                        <div align = "right">
+                        <div>
                             <input type = "button" value="블로그 가기" onclick="location.href = '<%= blog_url %>'">
                         </div>
                     <% } else{ %>
-                        <div align = "right">
+                        <div>
                             <!-- <button type = "submit"><a href="/blog_create">블로그 만들기</button></a> -->
                             <input type="button" value="블로그 만들기" onclick="location.href='/blog_create' ">
                         </div>
                     <% } %>
                 <% }else { %>
-                    <div align="right" name = "signup"><a href="home_login">로그인/회원가입</a></div>
+                    <div name = "signup"><a href="home_login">로그인/회원가입</a></div>
                 <% } %>
         </div>
         <div id = "div_menu">
@@ -47,6 +49,7 @@
                     </div>
                 <% } %>
             </ol>
+        </div>
     </div>
  </body>
 <script>
