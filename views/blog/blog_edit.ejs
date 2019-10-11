@@ -3,6 +3,7 @@
         <% include ../partials/head %>
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script type="text/javascript" src="http://code.jquery.com/jquery-3.2.0.min.js" ></script>
 
 <script type="text/javascript">
     var img_L = 0;
@@ -146,16 +147,38 @@
     function button_menuadd(){
         var input = document.createElement("input");
         var div_add = document.getElementById("menubarbasicid");
+        var div_str = div_add.lastElementChild.getAttribute('id')
+        var div_no = div_str.replace("menudelid","")
+        div_no =Number(div_no)
+        div_no = div_no +1
         input.type = "text"
         input.id = "menuaddid"
-        input.name = "menuaddname"
+        input.name = "menuaddname"+div_no
         input.align = "center"
-        input.style.width ='100%'
+        input.style.width ='80%'
         input.value  = document.getElementById("add").value
 
         document.getElementById("add").value = null;
+        var del_div = document.createElement("div");
+        del_div.id = "menudelid"+div_no
+        // del_div.name = "menudelname"+div_no
+        // console.log(del_div.name)
+        del_div.innerHTML ="x"
+        // del_div.addEventListener("click",button_menudel,false)
+        // onclick = "button_menudel('<%=[i]%>')"
+
+        console.log(input)
+        console.log(del_div)
 
         div_add.appendChild(input);
+        div_add.appendChild(del_div)
+    }
+    function button_menudel(i){
+        var menu = document.getElementById("menubarbasicid");
+        var input_del = document.getElementsByName("menuaddname"+i);
+        var div_del = document.getElementsByName("menudelname"+i);
+        menu.removeChild(input_del[0])
+        menu.removeChild(div_del[0])
     }
 
 </script>
@@ -172,9 +195,12 @@
 
             </div>
             <div id ='menubarbasicid' name='menubarbasicname' style=" width:20%; height:300px; float:left;">
-                <input type="text" id='menuaddid' name='menuaddname' align="center" style='width:100%' value ="약속" />
-                <input type="text" id='menuaddid' name='menuaddname' align="center" style='width:100%' value ="중요한글" />
-                <input type="text" id='menuaddid' name='menuaddname' align="center" style='width:100%' value ="리뷰글" />
+                <% var menuarray = alldata.menu.split(',');
+                    for(var i=0; i<menuarray.length;i++) {%>
+                        <input type="text" id = 'menuaddid' name = 'menuaddname<%=[i]%>' style='width:80%' value ="<%=menuarray[i] %>" />
+                        <div id ="menudelid<%=[i]%>" name = "menudelname<%=[i]%>" style="cursor:pointer; width:20%"  onclick = "button_menudel('<%=[i]%>')">x</div>
+                        <!-- <input type="button" id ="menudelid" name = "menudelname<%=[i]%>"  onclick = "button_menudel('<%=[i]%>')" value="메뉴 삭제" /> -->
+                <%};%>
             </div>
             <input type = "text" id ="blog_url" name ="url" value="<%=url%>" style="display:none" />
             <form>

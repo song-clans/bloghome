@@ -43,8 +43,10 @@ router.post('/blog/:user_name/:blog_name/save_ok',upload.single('file_sel'),func
         var params = req.params.user_name
         var x_point = req.body.image_xpoint
 
-        var menu = req.body.menuaddname
-        
+        // var menu = new RegExp(`/${req.body.menuaddname}[0-9]/`)
+        var menu = req.body.menuaddname;
+        console.log(menu)
+        // var menu_sp = menu.split(",")
         db.query(sql,params,function(err,row){
             if(err){
                 console.log("save_ok post err")                
@@ -54,6 +56,7 @@ router.post('/blog/:user_name/:blog_name/save_ok',upload.single('file_sel'),func
                 db.query(sql)
             }
             if(menu){
+
                 sql = `update blog_table set menu='${menu}' where id = "${session.user[1]}"`
                 db.query(sql)
             }

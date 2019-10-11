@@ -102,6 +102,7 @@ router.get('/blog/:user_name/:blog_name/detail/:menu', (req, res)=>{
     var session = req.session.passport
     var sql = 'select * from blog_table where id =?';
     var params = req.params.user_name
+    var menu_params = req.params.menu
     db.query(sql,params,(err,row)=>{
         if(row[0]){
             if(session){

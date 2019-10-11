@@ -7,6 +7,7 @@ var loginRouter = require('./routes/login');
 var flash = require('connect-flash');
 var blogRouter = require('./routes/blog')
 var fileRouter = require('./routes/file')
+var react_nativeRouter = require('./routes/react_native')
 var app = express();
 
 
@@ -33,6 +34,7 @@ app.use('/',indexRouter)
 app.use('/',loginRouter)
 app.use('/',blogRouter)
 app.use('/',fileRouter)
+app.use('/',react_nativeRouter)
 
 
 var port = 8080;

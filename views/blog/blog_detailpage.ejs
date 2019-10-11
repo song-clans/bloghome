@@ -9,7 +9,7 @@
     <div id = 'div_menu'>
         <% var menuarray = alldata.menu.split(',');
         for(var i=0; i<menuarray.length;i++) {%>
-            <div id = 'menu<%=i%>' name = 'menu<%=i%>' align ='center' style ="cursor:pointer;" onclick="return menu_click('<%=i%>')"><%=menuarray[i] %></div>
+            <div id = 'menu<%=i%>' name = 'menu<%=i%>' align ='center' style ="cursor:pointer;" onclick="return menu_click('<%=menuarray[i]%>')"><%=menuarray[i] %></div>
         <%};%>
     </div>
     <div id ="div_con">
@@ -60,10 +60,9 @@ $(function(){
       // window.onload = function() {
         
       // };
-      function menu_click(i){
-        // console.log(document.getElementById("menu"+i).innerText)
-        // console.log(location.pathname)
-        location.href = location.pathname+"/"+ document.getElementById("menu"+i).innerText
+      function menu_click(url_name){
+        var basic_url =location.pathname.split('detail')
+        location.href = basic_url[0] +"detail/"+ url_name
       }
    </script>
 
