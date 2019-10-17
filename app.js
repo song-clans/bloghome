@@ -11,6 +11,7 @@ var react_nativeRouter = require('./routes/react_native')
 var app = express();
 
 
+app.use("/public",express.static(__dirname+"/public"));
 
 app.use(session({
     secret : 'secret',
@@ -28,8 +29,8 @@ app.set('views', __dirname+'/views');
 app.set('view engine', 'ejs');
 app.set('html',require('ejs').renderFile);
 
-app.use(bodyParser.urlencoded({extended:false}));
-app.use(bodyParser.json())
+app.use(bodyParser.urlencoded({limit:'50mb',extended:true}));
+app.use(bodyParser.json({limit:'50mb'}))
 app.use('/',indexRouter)
 app.use('/',loginRouter)
 app.use('/',blogRouter)

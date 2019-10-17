@@ -33,6 +33,7 @@ router.get('/home/test2', (req,res)=>{
     res.render('blog/test1')
 })
 
+
 router.get('/main_home', (req, res)=>{
     
     var sql = "select * from home"

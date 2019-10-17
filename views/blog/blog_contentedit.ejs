@@ -1,0 +1,192 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+    <!-- <script src="http://code.jquery.com/jquery-latest.js"></script> -->
+    <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script type="text/javascript" src="http://code.jquery.com/jquery-3.2.0.min.js" ></script> -->
+    <% include ../partials/head %>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script type="text/javascript" src="http://code.jquery.com/jquery-3.2.0.min.js" ></script>
+    <script type="text/javascript" src="/public/smartEditor/js/service/HuskyEZCreator.js" charset="utf-8"></script>
+
+</head>
+
+<body>
+  <div id ="div_root">
+    <div id='blog_top' style="height:180px; width:100%; text-align: center; overflow: hidden;" ><img src='<%=alldata.image_url%>' style = "width:100%; position : relative; top: <%=alldata.image_xpoint %>" /></div>
+    <div id = 'div_menu'>
+        <% var menuarray = alldata.menu.split(',');
+        for(var i=0; i<menuarray.length;i++) {%>
+            <div id = 'menu<%=i%>' name = 'menu<%=i%>' align ='center' style ="cursor:pointer;" onclick="return menu_click('<%=menuarray[i]%>')"><%=menuarray[i] %></div>
+        <%};%>
+    </div>
+    <div id ="div_con">
+    <%if(name == "0"){%>
+      <div id = "div_bloglogin" class="login" style="cursor: pointer;" onclick="return but_click()">로그인/회원가입</div>
+    <% }else{ %>
+      <div id = "div_bloglogin" class="login_name"><%= name.user[0] %>님
+        <form action ="/logout" method="POST">
+          <button type="submit">Logout</button>
+        </form>
+        <%if(login == name.user[1]){ %>
+            <button type="button" onclick="return but_click2()">블로그 수정</button>
+        <% } %>
+      </div>
+    <% } %>
+
+    <div id ="div_title"><%=alldata.de_menu %></div>
+
+    <form action='/test/post' id="upload_form" method="post" encType="multipart/form-data" runat="server">
+    <div id= "preview"></div>
+    <input type="file" id="edit_file_sel" name ="edit_file_sel" style="display:block" accept="image/*" onchange="pasteHTML(this)" multiple />
+    <table class="table table-sm" style="width: 70%; margin-top:50px; margin-left:10px; margin-right:auto;">
+            <tbody>
+                  <tr>
+                      <th>제목: </th>
+                      <td><input type="text" placeholder="제목을 입력하세요. " name="subject" class="form-control"/></td>
+                  </tr>
+                  <tr>
+                      <th>내용: </th>
+                      <td>
+                        <textarea id="popContent" name ="popContent" style="width:100%; height:500px;" cols="10" class="form-control">
+            
+                        </textarea></td>
+                  </tr>
+                  <tr>
+                      <td colspan="2">
+                          <!-- <input type="submit" value="올리기"> -->
+                          <input type="button" id="success" value="등록" class="pull-right"/>
+                          <input type="button" value="reset" class="pull-left"/>
+                          <!-- <input type="file" id="file_sel" style="display: none;"> -->
+                          <!-- <input type ="hidden" name = "filepath" /> -->
+                          <!-- <input type="button" value="글 목록으로... " class="pull-right" onclick="javascript:location.href='list.jsp'"/> -->
+                          <!-- <a class="btn btn-default" onclick="sendData()"> 등록 </a>
+                          <a class="btn btn-default" type="reset"> reset </a>
+                          <a class="btn btn-default" onclick="javascript:location.href='list.jsp'">글 목록으로...</a> -->
+                      </td>
+                  </tr>
+            </tbody>
+        </table>
+      </form>
+  </div>
+
+
+</body>
+
+<script type="text/javascript">
+    function but_click(){
+      var url = location.pathname
+      location.href = "/blog_login"+url
+    }
+    function but_click2(){
+      var url = location.pathname
+      var re_url = url.replace("/blog_login","")
+      re_url = re_url.replace("/save_ok","")
+      location.href = re_url+"/edit"
+    }
+
+    // window.onload = function() {
+      
+    // };
+    function menu_click(url_name){
+      var basic_url =location.pathname.split('detail')
+      location.href = basic_url[0] +"detail/"+ url_name
+    }
+
+    var oEditors = [];
+    nhn.husky.EZCreator.createInIFrame({
+    oAppRef: oEditors,
+    elPlaceHolder: "popContent",  //textarea ID
+    sSkinURI: "/public/smartEditor/SmartEditor2Skin.html",  //skin경로
+    fCreator: "createSEditor2",
+    fOnAppLoad : function(){
+      var img = '<img src="https://s3.ap-northeast-2.amazonaws.com/tripco-imagefile/1570758399608-KakaoTalk_20191008_113359061.jpg"/>'
+      console.log(img)
+			oEditors.getById["popContent"].exec("PASTE_HTML", [img]);
+		},
+    });
+
+    $("#success").click(function(){
+      //if(confirm("저장하시겠습니까?")) { // id가 smarteditor인 textarea에 에디터에서 대입
+      oEditors.getById["popContent"].exec("UPDATE_CONTENTS_FIELD", []); 
+      // 이부분에 에디터 validation 검증
+      $("#upload_form").submit();
+    });
+
+    
+    function pasteHTML(targetObj) {
+      var files = targetObj.files;
+      for ( var i = 0; i < files.length; i++) {
+        
+        var file = files[i];
+        var imageType = /image.*/; //이미지 파일일경우만.. 뿌려준다.
+        if (!file.type.match(imageType))
+          continue;
+
+        var img = document.createElement("img");
+        img.id = "textarea_img";
+        img.classList.add("obj");
+        img.file = file;
+        // img.style.position = 'relative';
+        // img.style.left = '0px';
+        img.style.height = '150px';
+        img.style.width = '150px';
+        // img.style.max-width = '100%';
+        // img.style.cursor = 'pointer';
+        // img.style.cursor = 'hand';
+        img.style.overflow = 'hidden';
+        var preview = document.getElementById("preview");
+        preview.appendChild(img);
+        // img.addEventListener("mousedown", mouse_onclick, false);
+
+        if (window.FileReader) { // FireFox, Chrome, Opera 확인.
+            var reader = new FileReader();
+            reader.onloadend = (function(aImg) {
+                return function(e) {
+                    aImg.src = e.target.result;
+                    console.log(aImg)
+                    var textarea_img = aImg.outerHTML
+                    oEditors.getById["popContent"].exec("PASTE_HTML", [textarea_img]);
+                };
+            })(img);
+            
+            reader.readAsDataURL(file);
+
+        } else { // safari is not supported FileReader
+            alert('not supported FileReader');
+            if (!document.getElementById("sfr_preview_error_"
+                    + previewId)) {
+                var info = document.createElement("p");
+                info.id = "sfr_preview_error_" + previewId;
+                info.innerHTML = "not supported FileReader";
+                preview.insertBefore(info, null);
+            }
+        }
+      }
+
+      // var image_name = document.getElementById("file_sel").files
+      // var test =document.getElementById("file_sel").value
+      // console.log(test)
+      
+      // console.log(oEditors.getById["PopContent"]);
+      
+      // var popContent = document.getElementById('popContent');
+      // console.log(popContent)
+      // var a = "<img src='https://s3.ap-northeast-2.amazonaws.com/tripco-imagefile/1571021724217-fadaf.png' />"
+      // <img src='https://s3.ap-northeast-2.amazonaws.com/tripco-imagefile/1570758399608-KakaoTalk_20191008_113359061.jpg' />
+      // popContent.appendChild(img)
+      // console.log(popContent)
+      // var test = oEditors.getById["popContent"]
+      // console.log(test)
+      // oEditors.getById["popContent"].exec("LOAD_CONTENTS_FIELD",[test]);
+      // parent.se2_iframe.location.reload(true);
+      // var test = "<img src='https://s3.ap-northeast-2.amazonaws.com/tripco-imagefile/1570758399608-KakaoTalk_20191008_113359061.jpg' />"
+      // popContent.onload = function(){
+      //   popContent.appendChild(test)
+      // }
+
+    }
+
+  </script>
+
+</html>

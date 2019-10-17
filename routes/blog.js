@@ -100,15 +100,17 @@ router.post('/blog_create', (req, res)=>{
 
 router.get('/blog/:user_name/:blog_name/detail/:menu', (req, res)=>{
     var session = req.session.passport
-    var sql = 'select * from blog_table where id =?';
-    var params = req.params.user_name
+    // var sql = 'select * from blog_table where id =?';
     var menu_params = req.params.menu
+    var params = [req.params.user_name,menu_params]
+
+    var sql ='SELECT * FROM blog_table AS a join blog_menutable AS b ON (a.id = b.id) WHERE a.id = ? AND b.de_menu = ?'
     db.query(sql,params,(err,row)=>{
         if(row[0]){
             if(session){
-                res.render('blog/blog_detailpage',{name:session,login:params,alldata:row[0]});
+                res.render('blog/blog_detailpage',{name:session,login:params[0],alldata:row[0]});
             }else{
-                res.render('blog/blog_detailpage',{name:"0",login:params,alldata:row[0]});
+                res.render('blog/blog_detailpage',{name:"0",login:params[0],alldata:row[0]});
             }
         }else{
             // console.log(err);
@@ -117,5 +119,6 @@ router.get('/blog/:user_name/:blog_name/detail/:menu', (req, res)=>{
         }
     })
 });
+
 
 module.exports = router;

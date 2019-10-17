@@ -1,191 +1,197 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <head>
-        <% include ../partials/head %>
+    <% include ../partials/head %>
 
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-<script type="text/javascript" src="http://code.jquery.com/jquery-3.2.0.min.js" ></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script type="text/javascript" src="http://code.jquery.com/jquery-3.2.0.min.js" ></script>
 
-<script type="text/javascript">
-    var img_L = 0;
-    var img_T = 0;
-    var targetObj;
-    var timer;
-    var istrue = false;
+    <script type="text/javascript">
+        var img_L = 0;
+        var img_T = 0;
+        var targetObj;
+        var timer;
+        var istrue = false;
 
-    function mouse_onclick(e){
-        startDrag(e,this)
-    }
+        function mouse_onclick(e){
+            startDrag(e,this)
+        }
 
-    // function getLeft(o){
-    //     return parseInt(o.style.left.replace('px', ''));
-    // }
-    function getTop(o){
-        return parseInt(o.style.top.replace('px', ''));
-    }
-    function startDrag(e, obj){
-        targetObj = obj;
-        var e_obj = window.event? window.event : e;
-        // img_L = getLeft(obj) - e_obj.clientX;
-        img_T = getTop(obj) - e_obj.clientY;
+        // function getLeft(o){
+        //     return parseInt(o.style.left.replace('px', ''));
+        // }
+        function getTop(o){
+            return parseInt(o.style.top.replace('px', ''));
+        }
+        function startDrag(e, obj){
+            targetObj = obj;
+            var e_obj = window.event? window.event : e;
+            // img_L = getLeft(obj) - e_obj.clientX;
+            img_T = getTop(obj) - e_obj.clientY;
 
-        document.onmousemove = moveDrag;
-        document.onmouseup = stopDrag;
-        if(e_obj.preventDefault)e_obj.preventDefault();
-    }
-    function moveDrag(e){
-        var e_obj = window.event? window.event : e;
-        // var dmvx = parseInt(e_obj.clientX + img_L);
-        var dmvy = parseInt(e_obj.clientY + img_T);
-        // targetObj.style.left = dmvx +"px";
-        targetObj.style.top = dmvy +"px";
-        
-        return false;
-    }
+            document.onmousemove = moveDrag;
+            document.onmouseup = stopDrag;
+            if(e_obj.preventDefault)e_obj.preventDefault();
+        }
+        function moveDrag(e){
+            var e_obj = window.event? window.event : e;
+            // var dmvx = parseInt(e_obj.clientX + img_L);
+            var dmvy = parseInt(e_obj.clientY + img_T);
+            // targetObj.style.left = dmvx +"px";
+            targetObj.style.top = dmvy +"px";
+            
+            return false;
+        }
 
-    function stopDrag(){
-        const target = document.getElementById('prev_previewId');
+        function stopDrag(){
+            const target = document.getElementById('prev_previewId');
 
-        // const clientRect = target.getBoundingClientRect(); // DomRect 구하기 (각종 좌표값이 들어있는 객체)
-        // const relativeTop = clientRect.top; // Viewport의 시작지점을 기준으로한 상대좌표 Y 값.
-        // const scrolledTopLength = window.pageYOffset;
-        // const absoluteTop = scrolledTopLength + relativeTop;
-        // document.getElementById("image_xpoint").value = absoluteTop;  좌표 절대값 구하는법
-        
-        document.getElementById("image_xpoint").value = targetObj.style.top;
+            // const clientRect = target.getBoundingClientRect(); // DomRect 구하기 (각종 좌표값이 들어있는 객체)
+            // const relativeTop = clientRect.top; // Viewport의 시작지점을 기준으로한 상대좌표 Y 값.
+            // const scrolledTopLength = window.pageYOffset;
+            // const absoluteTop = scrolledTopLength + relativeTop;
+            // document.getElementById("image_xpoint").value = absoluteTop;  좌표 절대값 구하는법
+            
+            document.getElementById("image_xpoint").value = targetObj.style.top;
 
-        document.onmousemove = null;
-        document.onmouseup = null;
-    }
+            document.onmousemove = null;
+            document.onmouseup = null;
+        }
 
-    function previewImage(targetObj, previewId) {
+        function previewImage(targetObj, previewId) {
 
-        var preview = document.getElementById(previewId); //div id  
-        var ua = window.navigator.userAgent;
+            var preview = document.getElementById(previewId); //div id  
+            var ua = window.navigator.userAgent;
 
-        if (ua.indexOf("MSIE") > -1) {//ie일때
+            if (ua.indexOf("MSIE") > -1) {//ie일때
 
-            targetObj.select();
+                targetObj.select();
 
-            try {
-                var src = document.selection.createRange().text; // get file full path
-                var ie_preview_error = document
-                        .getElementById("ie_preview_error_" + previewId);
+                try {
+                    var src = document.selection.createRange().text; // get file full path
+                    var ie_preview_error = document
+                            .getElementById("ie_preview_error_" + previewId);
 
-                if (ie_preview_error) {
-                    preview.removeChild(ie_preview_error); //error가 있으면 delete
-                }
+                    if (ie_preview_error) {
+                        preview.removeChild(ie_preview_error); //error가 있으면 delete
+                    }
 
-                var img = document.getElementById(previewId); //이미지가 뿌려질 곳
-   
-                img.style.filter = "progid:DXImageTransform.Microsoft.AlphaImageLoader(src='"+ src + "', sizingMethod='scale')";
-            } catch (e) {
-                if (!document.getElementById("ie_preview_error_" + previewId)) {
-                    var info = document.createElement("<p>");
-                    info.id = "ie_preview_error_" + previewId;
-                    info.innerHTML = "a";
-                    preview.insertBefore(info, null);
-                }
-            }
-        } else { //ie가 아닐때
-            var files = targetObj.files;
-            for ( var i = 0; i < files.length; i++) {
-
-                var file = files[i];
-
-                var imageType = /image.*/; //이미지 파일일경우만.. 뿌려준다.
-                if (!file.type.match(imageType))
-                    continue;
-
-                var prevImg = document.getElementById("prev_" + previewId); //이전에 미리보기가 있다면 삭제
-                if (prevImg) {
-                    preview.removeChild(prevImg);
-                }
-
-                var img = document.createElement("img");
-                img.id = "prev_" + previewId;
-                img.classList.add("obj");
-                img.file = file;
-                img.style.position = 'relative';
-                // img.style.left = '0px';
-                img.style.top = '0px';
-                img.style.width = '100%';
-                // img.style.max-width = '100%';
-                img.style.cursor = 'pointer';
-                img.style.cursor = 'hand';
-                img.style.overflow = 'hidden';
-                img.addEventListener("mousedown", mouse_onclick, false);
-                preview.appendChild(img);
-
-                if (window.FileReader) { // FireFox, Chrome, Opera 확인.
-                    var reader = new FileReader();
-                    reader.onloadend = (function(aImg) {
-                        return function(e) {
-                            aImg.src = e.target.result;
-                        };
-                    })(img);
-                    reader.readAsDataURL(file);
-                } else { // safari is not supported FileReader
-                    //alert('not supported FileReader');
-                    if (!document.getElementById("sfr_preview_error_"
-                            + previewId)) {
-                        var info = document.createElement("p");
-                        info.id = "sfr_preview_error_" + previewId;
-                        info.innerHTML = "not supported FileReader";
+                    var img = document.getElementById(previewId); //이미지가 뿌려질 곳
+    
+                    img.style.filter = "progid:DXImageTransform.Microsoft.AlphaImageLoader(src='"+ src + "', sizingMethod='scale')";
+                } catch (e) {
+                    if (!document.getElementById("ie_preview_error_" + previewId)) {
+                        var info = document.createElement("<p>");
+                        info.id = "ie_preview_error_" + previewId;
+                        info.innerHTML = "a";
                         preview.insertBefore(info, null);
+                    }
+                }
+            } else { //ie가 아닐때
+                var files = targetObj.files;
+                for ( var i = 0; i < files.length; i++) {
+                    console.log(files[i])
+                    var file = files[i];
+
+                    var imageType = /image.*/; //이미지 파일일경우만.. 뿌려준다.
+                    if (!file.type.match(imageType))
+                        continue;
+
+                    var prevImg = document.getElementById("prev_" + previewId); //이전에 미리보기가 있다면 삭제
+                    if (prevImg) {
+                        preview.removeChild(prevImg);
+                    }
+
+                    var img = document.createElement("img");
+                    img.id = "prev_" + previewId;
+                    img.classList.add("obj");
+                    img.file = file;
+                    img.style.position = 'relative';
+                    // img.style.left = '0px';
+                    img.style.top = '0px';
+                    img.style.width = '100%';
+                    // img.style.max-width = '100%';
+                    img.style.cursor = 'pointer';
+                    img.style.cursor = 'hand';
+                    img.style.overflow = 'hidden';
+                    img.addEventListener("mousedown", mouse_onclick, false);
+
+                    console.log(img)
+
+                    preview.appendChild(img);
+                    var test = document.getElementById("upload_form")
+                    console.log(test)
+                    if (window.FileReader) { // FireFox, Chrome, Opera 확인.
+                        var reader = new FileReader();
+                        reader.onloadend = (function(aImg) {
+                            return function(e) {
+                                aImg.src = e.target.result;
+                            };
+                        })(img);
+
+                        reader.readAsDataURL(file);
+                    } else { // safari is not supported FileReader
+                        //alert('not supported FileReader');
+                        if (!document.getElementById("sfr_preview_error_"
+                                + previewId)) {
+                            var info = document.createElement("p");
+                            info.id = "sfr_preview_error_" + previewId;
+                            info.innerHTML = "not supported FileReader";
+                            preview.insertBefore(info, null);
+                        }
                     }
                 }
             }
         }
-    }
-    function clik_eve(){
-        var fileupload = document.getElementById("file_sel");
-        var but = document.getElementById("previewId");
-        but.ondblclick = function () {
-            fileupload.click();
-        };
-    }
-    function button_menuadd(){
-        var input = document.createElement("input");
-        var div_add = document.getElementById("menubarbasicid");
-        var div_str = div_add.lastElementChild.getAttribute('id')
-        var div_no = div_str.replace("menudelid","")
-        div_no =Number(div_no)
-        div_no = div_no +1
-        input.type = "text"
-        input.id = "menuaddid"
-        input.name = "menuaddname"+div_no
-        input.align = "center"
-        input.style.width ='80%'
-        input.value  = document.getElementById("add").value
+        function clik_eve(){
+            var fileupload = document.getElementById("file_sel");
+            var but = document.getElementById("previewId");
+            but.ondblclick = function () {
+                fileupload.click();
+            };
+        }
+        function button_menuadd(){
+            var input = document.createElement("input");
+            var div_add = document.getElementById("menubarbasicid");
+            var div_str = div_add.lastElementChild
+            var div_no
+            if(div_str){
+                div_str = div_str.getAttribute('id')
+                div_no = div_str.replace("menudelid","")
+                div_no =Number(div_no)
+                div_no = div_no +1
+            }else{
+                div_no = 0
+            }
+            input.type = "text"
+            input.id = "menuaddid"+div_no
+            input.name = "menuaddname"
+            input.align = "center"
+            input.style.width ='80%'
+            input.value  = document.getElementById("add").value
+            document.getElementById("add").value = null;
+            var del_div = document.createElement("div");
+            del_div.id = "menudelid"+div_no
+            del_div.innerHTML ="x"
+            del_div.style.cursor = "pointer"
+            del_div.addEventListener("click",function(){button_menudel(div_no);},false)
+            div_add.appendChild(input);
+            div_add.appendChild(del_div)
+        }
+        function button_menudel(i){
+            
+            var menu = document.getElementById("menubarbasicid");
+            var input_del = document.getElementById("menuaddid"+i);
+            // var div_del = document.getElementsByName("menudelname"+i);
+            var div_del = document.getElementById("menudelid"+i);
+            menu.removeChild(input_del)
+            menu.removeChild(div_del)
+        }
 
-        document.getElementById("add").value = null;
-        var del_div = document.createElement("div");
-        del_div.id = "menudelid"+div_no
-        // del_div.name = "menudelname"+div_no
-        // console.log(del_div.name)
-        del_div.innerHTML ="x"
-        // del_div.addEventListener("click",button_menudel,false)
-        // onclick = "button_menudel('<%=[i]%>')"
-
-        console.log(input)
-        console.log(del_div)
-
-        div_add.appendChild(input);
-        div_add.appendChild(del_div)
-    }
-    function button_menudel(i){
-        var menu = document.getElementById("menubarbasicid");
-        var input_del = document.getElementsByName("menuaddname"+i);
-        var div_del = document.getElementsByName("menudelname"+i);
-        menu.removeChild(input_del[0])
-        menu.removeChild(div_del[0])
-    }
-
-</script>
+    </script>
 
 </head>
 <body>
-    <form action="<%=re_url%>" method="post"  enctype="multipart/form-data" id="upload_form" runat="server">
+    <form action="<%=re_url%>" method="post" enctype="multipart/form-data" id="upload_form" runat="server">
         <input type="file" id="file_sel" name ="file_sel" onchange="previewImage(this,'previewId')" style="display:none" accept="image/*">
         <input type = "text" id ="image_xpoint" name ="image_xpoint" style="display:none" value ="<%=alldata.image_xpoint %>" />
         <div id ="div_root">
@@ -197,8 +203,8 @@
             <div id ='menubarbasicid' name='menubarbasicname' style=" width:20%; height:300px; float:left;">
                 <% var menuarray = alldata.menu.split(',');
                     for(var i=0; i<menuarray.length;i++) {%>
-                        <input type="text" id = 'menuaddid' name = 'menuaddname<%=[i]%>' style='width:80%' value ="<%=menuarray[i] %>" />
-                        <div id ="menudelid<%=[i]%>" name = "menudelname<%=[i]%>" style="cursor:pointer; width:20%"  onclick = "button_menudel('<%=[i]%>')">x</div>
+                        <input type="text" id = 'menuaddid<%=[i]%>' name = 'menuaddname' style='width:80%' value ="<%=menuarray[i] %>" />
+                        <div id ="menudelid<%=[i]%>" style="cursor:pointer; width:20%"  onclick = "button_menudel('<%=[i]%>')">x</div>
                         <!-- <input type="button" id ="menudelid" name = "menudelname<%=[i]%>"  onclick = "button_menudel('<%=[i]%>')" value="메뉴 삭제" /> -->
                 <%};%>
             </div>

@@ -69,29 +69,6 @@ passport.use(new LocalStrategy({
 ))
 
 
-// router.post('/react_login', (req,res)=>{
-//     var username = req.body.username
-//     var password = req.body.password
-//     var sql = `select * from user_table where id="${username}"`
-
-//     db.query(sql,function(err,row){
-//         // console.log(row)
-//        if(row[0]){
-//             var decipher = crypto.createDecipher('aes192', username);
-//             decipher.update(row[0].password, 'base64', 'utf8');
-//             var decipherpassword = decipher.final('utf8');
-//             if(password == decipherpassword){
-//                 res.json("true")
-//             }else{
-//                 res.json("false")
-//             }
-//        }else{
-//            res.json("아이디가 없음")
-//        }
-//     })
-// })
-
-
 
 router.route('/home_login')
 .get((req,res)=>{

@@ -1,0 +1,115 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="ko" xml:lang="ko">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>네이버 :: Smart Editor 2 &#8482;</title>
+<script type="text/javascript" src="./js/service/HuskyEZCreator.js" charset="utf-8"></script>
+<script type="text/javascript" src="./js/lib/jindo2.all.js" charset="utf-8"></script>
+<script type="text/javascript" src="./js/lib/jindo_component.js" charset="utf-8"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script type="text/javascript" src="http://code.jquery.com/jquery-3.2.0.min.js" ></script>
+
+</head>
+<body>
+	<textarea name="ir1" id="ir1" rows="10" cols="100" style="width:766px; height:412px; display:block;"></textarea>
+	<!--textarea name="ir1" id="ir1" rows="10" cols="100" style="width:100%; height:412px; min-width:610px; display:none;"></textarea-->
+	<p>
+		<!-- <input type="button" id="buttontest" onclick="pasteHTML(this,'viewimg')" value="본문에 내용 넣기" /> -->
+		<input type="button" onclick="showHTML();" value="본문 내용 가져오기" />
+		<input type="button" onclick="submitContents(this);" value="서버로 내용 전송" />
+		<input type="button" onclick="setDefaultFont();" value="기본 폰트 지정하기 (궁서_24)" />
+		<input type="file" id="file_sel" name ="file_sel" style="display:block" accept="image/*" onchange="pasteHTML(this,'viewimg')" multiple />
+		<img src="about:blank" name="viewimg" id="previewimg" alt="">
+	</p>
+<script type="text/javascript">
+
+	// function file_click(){
+	// 	var test = location.pathname
+	// 	console.log(test)
+	// 	var fileupload = document.getElementById("file_sel");		
+	// 	fileupload.click();
+	// }
+
+	var oEditors = [];
+
+	var sLang = "ko_KR";	// 언어 (ko_KR/ en_US/ ja_JP/ zh_CN/ zh_TW), default = ko_KR
+
+	// 추가 글꼴 목록
+	//var aAdditionalFontSet = [["MS UI Gothic", "MS UI Gothic"], ["Comic Sans MS", "Comic Sans MS"],["TEST","TEST"]];
+
+	nhn.husky.EZCreator.createInIFrame({
+		oAppRef: oEditors,
+		elPlaceHolder: "ir1",
+		sSkinURI: "SmartEditor2Skin.html",	
+		htParams : {
+			bUseToolbar : true,				// 툴바 사용 여부 (true:사용/ false:사용하지 않음)
+			bUseVerticalResizer : true,		// 입력창 크기 조절바 사용 여부 (true:사용/ false:사용하지 않음)
+			bUseModeChanger : true,			// 모드 탭(Editor | HTML | TEXT) 사용 여부 (true:사용/ false:사용하지 않음)
+			//bSkipXssFilter : true,		// client-side xss filter 무시 여부 (true:사용하지 않음 / 그외:사용)
+			//aAdditionalFontList : aAdditionalFontSet,		// 추가 글꼴 목록
+			fOnBeforeUnload : function(){
+				//alert("완료!");
+			},
+			I18N_LOCALE : sLang
+		}, //boolean
+		fOnAppLoad : function(){
+			
+			var test = oEditors.getById["file_sel"]
+			
+			// var test3 = oEditors.getById["ir1"].aPlugins[40].toolbarArea
+			var test4 = oEditors.getById["ir1"]
+
+			var test5 =jindo.$("se2_tool")
+			console.log("asdasd",test5)
+			console.log(test)
+			
+			// console.log(test3)
+			console.log(test4)
+			// var input_file = '<input type="file" id="file_sel" style="display: block;">'
+			// oEditors.getById["ir1"].exec("PASTE_HTML", [input_file]);
+		},
+		fCreator: "createSEditor2"
+	});
+
+	function pasteHTML(targetObj,viewimg) {
+		// <ul class="se2_multy">
+		// 	<li class="se2_mn husky_seditor_ui_photo_attach"><button type="button" class="se2_photo ico_btn" onclick="file_click()"><span class="se2_icon"></span><span class="se2_mntxt">사진<span class="se2_new"></span></span></button></li>
+		// </ul>
+		if(targetObj.files[0]){
+			console.log(targetObj.files[0])
+		var reader = new FileReader();
+		reader.onload=function(e){
+		console.log($("previewimg").attr('src',e.target.result));
+		}
+		reader.readAsDataURL(targetObj.files[0])
+		}
+		var test2 = document.getElementById("previewimg")
+		console.log(test2.src)
+
+		oEditors.getById["ir1"].exec("PASTE_HTML", [test2]);
+	}
+
+	function showHTML() {
+		var sHTML = oEditors.getById["ir1"].getIR();
+		alert(sHTML);
+	}
+		
+	function submitContents(elClickedObj) {
+		oEditors.getById["ir1"].exec("UPDATE_CONTENTS_FIELD", []);	// 에디터의 내용이 textarea에 적용됩니다.
+		
+		// 에디터의 내용에 대한 값 검증은 이곳에서 document.getElementById("ir1").value를 이용해서 처리하면 됩니다.
+		
+		try {
+			elClickedObj.form.submit();
+		} catch(e) {}
+	}
+
+	function setDefaultFont() {
+		var sDefaultFont = '궁서';
+		var nFontSize = 24;
+		oEditors.getById["ir1"].setDefaultFont(sDefaultFont, nFontSize);
+	}
+</script>
+
+</body>
+</html>
