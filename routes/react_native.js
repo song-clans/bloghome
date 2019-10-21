@@ -76,16 +76,32 @@ router.post('/react_test_contents', (req,res)=>{
     var email = req.body.email
     var contents = req.body.description
     var title = req.body.title
-    var image = "test"
-    var params =[email,contents,image,title]
+    var convertedImg = req.body.convertedImg
+    var lat = req.body.lat
+    var lng = req.body.lng
+    var image = req.body.image
+    var params =[email,contents,image,title,convertedImg,lat,lng]
 
-    console.log(req.body)
+    // console.log(req.body)
 
-    var sql = 'insert into react_test_content (email,contents,image,title) values (?,?,?,?)'
+    var sql = 'insert into react_test_content (email,contents,image,title,convertedImg,lat,lng) values (?,?,?,?,?,?,?)'
     // console.log(sql)
     db.query(sql,params)
-    console.log("update ok")
+    // console.log("update ok")
     res.json("ok")
+})
+
+router.post('/react_content_select', (req,res)=>{
+    var email = req.body.email
+
+    // console.log(req.body)
+
+    var sql = `select * from react_test_content where email="${email}"`
+    // console.log(sql)
+    db.query(sql,(err,row)=>{
+        res.json(row)
+    })
+    // console.log("update ok"))
 })
 
 module.exports = router;

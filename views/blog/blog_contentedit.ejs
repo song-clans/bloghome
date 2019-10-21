@@ -36,9 +36,10 @@
 
     <div id ="div_title"><%=alldata.de_menu %></div>
 
-    <form action='/test/post' id="upload_form" method="post" encType="multipart/form-data" runat="server">
-    <div id= "preview"></div>
-    <input type="file" id="edit_file_sel" name ="edit_file_sel" style="display:block" accept="image/*" onchange="pasteHTML(this)" multiple />
+    <form action='<%=re_url%>' id="upload_form" method="post" encType="multipart/form-data" runat="server">
+    <div id= "preview" style="display: none;"></div>
+    <input type="file" id="edit_file_sel" name ="edit_file_sel" style="display:none" accept="image/*" onchange="pasteHTML(this)" multiple />
+    <!-- <input type="file" id="edit_file_sel2" name ="edit_file_sel2" style="display:none" accept="image/*" onchange="pasteHTML(this)" multiple /> -->
     <table class="table table-sm" style="width: 70%; margin-top:50px; margin-left:10px; margin-right:auto;">
             <tbody>
                   <tr>
@@ -93,38 +94,55 @@
       location.href = basic_url[0] +"detail/"+ url_name
     }
 
+    
+    var form_data = new FormData(document.getElementById('upload_form'))
     var oEditors = [];
     nhn.husky.EZCreator.createInIFrame({
     oAppRef: oEditors,
     elPlaceHolder: "popContent",  //textarea ID
     sSkinURI: "/public/smartEditor/SmartEditor2Skin.html",  //skin경로
     fCreator: "createSEditor2",
-    fOnAppLoad : function(){
-      var img = '<img src="https://s3.ap-northeast-2.amazonaws.com/tripco-imagefile/1570758399608-KakaoTalk_20191008_113359061.jpg"/>'
-      console.log(img)
-			oEditors.getById["popContent"].exec("PASTE_HTML", [img]);
-		},
+    // fOnAppLoad : function(){
+    //   var img = '<img src="https://s3.ap-northeast-2.amazonaws.com/tripco-imagefile/blog_image/1571383162462-fadaf.png" style="width:auto; height:300px; overflow:hidden;">'
+    //   console.log(img)
+		// 	oEditors.getById["popContent"].exec("PASTE_HTML", [img]);
+		// },
     });
 
     $("#success").click(function(){
+      // var input_test = document.getElementById("edit_file_sel2")
+      // input_test.push(test)
       //if(confirm("저장하시겠습니까?")) { // id가 smarteditor인 textarea에 에디터에서 대입
       oEditors.getById["popContent"].exec("UPDATE_CONTENTS_FIELD", []); 
+      console.log(oEditors.getById["popContent"])
       // 이부분에 에디터 validation 검증
+      document.getElementById("edit_file_sel").value = ""
+
+      $.ajax({
+        url:'http://localhost:8080/blog/clans/clansblog/detail/%ED%95%98%EB%82%98/save_ok',
+        processData : false,
+        contentType : false,
+        data : form_data,
+        type : 'POST',
+        success:function(result){
+          alert("성공");
+        }
+      })
       $("#upload_form").submit();
     });
 
     
     function pasteHTML(targetObj) {
       var files = targetObj.files;
+      
       for ( var i = 0; i < files.length; i++) {
-        
         var file = files[i];
         var imageType = /image.*/; //이미지 파일일경우만.. 뿌려준다.
         if (!file.type.match(imageType))
           continue;
 
         var img = document.createElement("img");
-        img.id = "textarea_img";
+        img.id = file.name;
         img.classList.add("obj");
         img.file = file;
         // img.style.position = 'relative';
@@ -137,21 +155,32 @@
         img.style.overflow = 'hidden';
         var preview = document.getElementById("preview");
         preview.appendChild(img);
-        // img.addEventListener("mousedown", mouse_onclick, false);
+        // File_List.push(file)
+        // test.push(file)
+        form_data.append("edit_file_sel",file)
+        // console.log(File_List)
+        // console.log("c",document.getElementById('edit_file_sel').files)
+        
+        // console.log(test)
+        // console.log(form_test.getAll("edit_file_sel"))
+        // var tt = form_test.keys();
+        // console.log(tt.next());
+        // console.log(tt.next());
+        // console.log(tt.next());
 
+        // img.addEventListener("mousedown", mouse_onclick, false);
         if (window.FileReader) { // FireFox, Chrome, Opera 확인.
             var reader = new FileReader();
             reader.onloadend = (function(aImg) {
                 return function(e) {
                     aImg.src = e.target.result;
-                    console.log(aImg)
                     var textarea_img = aImg.outerHTML
                     oEditors.getById["popContent"].exec("PASTE_HTML", [textarea_img]);
                 };
             })(img);
             
             reader.readAsDataURL(file);
-
+            
         } else { // safari is not supported FileReader
             alert('not supported FileReader');
             if (!document.getElementById("sfr_preview_error_"
@@ -163,7 +192,8 @@
             }
         }
       }
-
+      document.getElementById("edit_file_sel").value = ""
+      // console.log(form_test.getAll('file'))
       // var image_name = document.getElementById("file_sel").files
       // var test =document.getElementById("file_sel").value
       // console.log(test)
