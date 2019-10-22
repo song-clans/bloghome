@@ -93,8 +93,7 @@ router.post('/react_test_contents', (req,res)=>{
 
 router.post('/react_content_select', (req,res)=>{
     var email = req.body.email
-
-    // console.log(req.body)
+    console.log(req.body)
 
     var sql = `select * from react_test_content where email="${email}"`
     // console.log(sql)

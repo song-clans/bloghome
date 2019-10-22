@@ -63,11 +63,13 @@ var arrupload = multer({storage:multerS3({
     })
 })
 
-router.post('/blog/:user_name/:blog_name/detail/:menu/save_ok',arrupload.array('edit_file_sel',10),function(req,res){
+router.post('/blog/:user_name/:blog_name/detail/:menu/:page/save_ok',arrupload.array('edit_file_sel',10),function(req,res){
     var session = req.session.passport
     var be_filename = req.body.popContent.match(/id="([^"]+)/ig)
+    var title = req.body.subject
+    var body = req.body.popContent
     if(be_filename){
-        var body = req.body.popContent.replace(/id([^>]+)/ig,"a")
+        body = req.body.popContent.replace(/id([^>]+)/ig,"a")
         for(var i=0; i<image_url.length; i++){
             be_filename[i] = be_filename[i]+'"'
         }
@@ -90,16 +92,27 @@ router.post('/blog/:user_name/:blog_name/detail/:menu/save_ok',arrupload.array('
                 }
             }
         }
-        console.log(body)
-        if(session){
-            // var sql = `update blog_menutable set content_image_url='${image_url}',content='${upfile_name}' where id = "${session.user[1]}" and de_menu="${}"`
-            //var sql = `insert`
-            // db.query(sql)
-        }
+    }
+    if(title){
+        var sql = "select * from blog_menutable where content_id=? and de_menu =? order by title_no desc"
+        var sel_par = [req.params.user_name,req.params.menu]
+        db.query(sql,sel_par,(err,row)=>{
+            if(row){
+                title_no = row[0].title_no + 1
+            }else{
+                title_no = 1
+            }
+            var blog_detailurl = `/blog/${req.params.user_name}/${req.params.blog_name}/detail/${req.params.menu}/page/${title_no}`
+            // if(session){
+            var param = [req.params.user_name,blog_detailurl,title,body,req.params.menu,title_no]
+            sql = "insert into blog_menutable values(?,?,?,?,?,?)"
+            db.query(sql,param)
+            // }
+        })
     }
     image_name = []
     image_url = []
-    res.redirect(`/blog/${req.params.user_name}/${req.params.blog_name}/detail/${req.params.menu}`);
+    res.redirect(`/blog/${req.params.user_name}/${req.params.blog_name}/detail/${req.params.menu}/1`);
 })
 
 
@@ -151,7 +164,7 @@ router.get("/blog/:user_name/:blog_name/:param",function(req,res){
     }
 })
 
-router.get('/blog/:user_name/:blog_name/detail/:menu/:param', (req, res)=>{
+router.get('/blog/:user_name/:blog_name/detail/:menu/:page/:param', (req, res)=>{
     var session = req.session.passport
     var menu_params = req.params.menu
 

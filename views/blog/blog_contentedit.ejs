@@ -91,7 +91,7 @@
     // };
     function menu_click(url_name){
       var basic_url =location.pathname.split('detail')
-      location.href = basic_url[0] +"detail/"+ url_name
+      location.href = basic_url[0] +"detail/"+ url_name +"/1"
     }
 
     
@@ -103,7 +103,7 @@
     sSkinURI: "/public/smartEditor/SmartEditor2Skin.html",  //skin경로
     fCreator: "createSEditor2",
     // fOnAppLoad : function(){
-    //   var img = '<img src="https://s3.ap-northeast-2.amazonaws.com/tripco-imagefile/blog_image/1571383162462-fadaf.png" style="width:auto; height:300px; overflow:hidden;">'
+    //   var img = '<img src="https://tripco-imagefile.s3.ap-northeast-2.amazonaws.com/blog_image/1571717975823-KakaoTalk_20191008_113359061.jpg" style="width:auto; height:300px; overflow:hidden;">'
     //   console.log(img)
 		// 	oEditors.getById["popContent"].exec("PASTE_HTML", [img]);
 		// },
@@ -114,19 +114,17 @@
       // input_test.push(test)
       //if(confirm("저장하시겠습니까?")) { // id가 smarteditor인 textarea에 에디터에서 대입
       oEditors.getById["popContent"].exec("UPDATE_CONTENTS_FIELD", []); 
-      console.log(oEditors.getById["popContent"])
+      // console.log(oEditors.getById["popContent"])
       // 이부분에 에디터 validation 검증
       document.getElementById("edit_file_sel").value = ""
-
+      var url_val = location.href
+      url_val = url_val.replace("edit","save_ok")
       $.ajax({
-        url:'http://localhost:8080/blog/clans/clansblog/detail/%ED%95%98%EB%82%98/save_ok',
+        url:url_val,
         processData : false,
         contentType : false,
         data : form_data,
-        type : 'POST',
-        success:function(result){
-          alert("성공");
-        }
+        type : 'POST'
       })
       $("#upload_form").submit();
     });

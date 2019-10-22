@@ -98,21 +98,25 @@ router.post('/blog_create', (req, res)=>{
     }
 });
 
-router.get('/blog/:user_name/:blog_name/detail/:menu', (req, res)=>{
+router.get('/blog/:user_name/:blog_name/detail/:menu/:page', (req, res)=>{
     var session = req.session.passport
     // var sql = 'select * from blog_table where id =?';
     var menu_params = req.params.menu
-    // var params = [req.params.user_name,menu_params]
     var params = req.params.user_name
-    // var sql ='SELECT * FROM blog_table AS a join blog_menutable AS b ON (a.id = b.id) WHERE a.id = ? AND b.de_menu = ?'
+    var page = req.params.page
     var sql = "select * from blog_table where id = ?"
     db.query(sql,params,(err,row)=>{
         if(row[0]){
-            if(session){
-                res.render('blog/blog_detailpage',{name:session,login:params,alldata:row[0]});
-            }else{
-                res.render('blog/blog_detailpage',{name:"0",login:params,alldata:row[0]});
-            }
+            sql = "SELECT * FROM blog_table AS a join blog_menutable AS b ON (a.id = b.content_id) WHERE a.id = ? AND b.de_menu = ?"
+            params = [req.params.user_name,menu_params]
+            db.query(sql,params,(err,rows)=>{
+
+                if(session){
+                    res.render('blog/blog_detailpage',{name:session,login:params[0],alldata:row[0],contentdata:rows,page:page,length:rows.length-1,page_num:10});
+                }else{
+                    res.render('blog/blog_detailpage',{name:"0",login:params[0],alldata:row[0],contentdata:rows,page:page,length:rows.length-1,page_num:10});
+                }
+            })
         }else{
             // console.log(err);
             // res.render('blog/blog_basic',{name:"0",image_url:row[0].image_url,x_point:row[0].image_xpoint});
@@ -120,6 +124,23 @@ router.get('/blog/:user_name/:blog_name/detail/:menu', (req, res)=>{
         }
     })
 });
+
+router.get('/blog/:user_name/:blog_name/detail/:menu/page/:title_no', (req, res)=>{
+    var session = req.session.passport
+    var sql ='SELECT * FROM blog_table AS a join blog_menutable AS b ON (a.id = b.content_id) WHERE a.id = ? AND b.title_no = ? AND b.de_menu=?'
+
+    var params = [req.params.user_name,req.params.title_no,req.params.menu]
+    db.query(sql,params,(err,row)=>{
+        if(session){
+            res.render('blog/blog_content_detail',{name:session,login:params[0],alldata:row[0]}); 
+        }else{
+            res.render('blog/blog_content_detail',{name:"0",login:params[0],alldata:row[0]});
+        }
+    })
+
+    // res.render('blog/blog_contentedit',{name:session,re_url:re_url,login:params[0],alldata:row[0]});
+});
+
 
 
 module.exports = router;

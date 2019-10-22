@@ -48,15 +48,29 @@
           </tr>
         </thead>
         <tbody>
+          <% for(var i = (page * page_num) - page_num; i < (page * page_num); i++) {
+            if(i > length){
+              i++;
+            }else{
+              var data = contentdata[i]
+            %>
           <tr>
-            <th scope="row">1</th>
-            <td></td>
-            <td></td>
+            <th scope="row"><%= i+1 %></th>
+            <td><a href="<%= data.blog_detailurl %>"><%= data.title %></a></td>
+            <td><%= data.content_id %></td>
             <td></td>
           </tr>
+          <% }
+          } %>
           <tr>
             <th>
-              <td colspan="3" style="text-align:right; cursor: pointer;" onclick="return contentadd()">글쓰기</td>
+              <td colspan ="2" style="text-align:center;">
+                <% for(var j =0; j < contentdata.length / page_num; j++){ %>
+                <a href="/<%= alldata.blog_url %>/detail/<%= data.de_menu %>/<%= j+1 %>"><%= j+1 %></a>
+                <%
+              }%>
+              </td>
+              <td style="text-align:center; cursor: pointer;" onclick="return contentadd()">글쓰기</td>
             </th>
           </tr>
         </tbody>
@@ -85,10 +99,9 @@
       // };
       function menu_click(url_name){
         var basic_url = location.pathname.split('detail')
-        location.href = basic_url[0] +"detail/"+ url_name
+        location.href = basic_url[0] +"detail/"+ url_name +"/1"
       }
       function contentadd(){
-        alert("글쓰기")
         var url = location.pathname
         location.href = url+"/edit"
       }
