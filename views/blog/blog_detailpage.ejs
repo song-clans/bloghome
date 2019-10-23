@@ -45,6 +45,7 @@
             <th scope="col">게시글</th>
             <th scope="col">올린 사람</th>
             <th scope="col">날짜</th>
+            <th scope="col">조회수</th>
           </tr>
         </thead>
         <tbody>
@@ -59,12 +60,13 @@
             <td><a href="<%= data.blog_detailurl %>"><%= data.title %></a></td>
             <td><%= data.content_id %></td>
             <td></td>
+            <td><%= data.view_plus %></td>
           </tr>
           <% }
           } %>
           <tr>
             <th>
-              <td colspan ="2" style="text-align:center;">
+              <td colspan ="3" style="text-align:center;">
                 <% for(var j =0; j < contentdata.length / page_num; j++){ %>
                 <a href="/<%= alldata.blog_url %>/detail/<%= data.de_menu %>/<%= j+1 %>"><%= j+1 %></a>
                 <%

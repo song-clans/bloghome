@@ -131,16 +131,53 @@ router.get('/blog/:user_name/:blog_name/detail/:menu/page/:title_no', (req, res)
 
     var params = [req.params.user_name,req.params.title_no,req.params.menu]
     db.query(sql,params,(err,row)=>{
+        sql = "select * from reple_content where content_id=? and content_no=? and content_menu=? order by update_time desc"
         if(session){
-            res.render('blog/blog_content_detail',{name:session,login:params[0],alldata:row[0]}); 
+            var up_sql = "UPDATE blog_menutable SET view_plus = view_plus + 1 WHERE content_id=? and title_no=? and de_menu=?"
+            var up_params = [req.params.user_name,req.params.title_no,req.params.menu]
+            db.query(up_sql,up_params)
+            db.query(sql,params,(err,rows)=>{
+                if(rows){
+                    res.render('blog/blog_content_detail',{name:session,login:params[0],alldata:row[0],menu:req.params.menu,reple:rows});
+                }else{
+                    res.render('blog/blog_content_detail',{name:session,login:params[0],alldata:row[0],menu:req.params.menu});
+                }
+            })
         }else{
-            res.render('blog/blog_content_detail',{name:"0",login:params[0],alldata:row[0]});
+            var up_sql = "UPDATE blog_menutable SET view_plus = view_plus + 1 WHERE content_id=? and title_no=? and de_menu=?"
+            var up_params = [req.params.user_name,req.params.title_no,req.params.menu]
+            db.query(up_sql,up_params)
+            db.query(sql,params,(err,rows)=>{
+                if(rows){
+                    res.render('blog/blog_content_detail',{name:"0",login:params[0],alldata:row[0],menu:req.params.menu,reple:rows});
+                }else{
+                    res.render('blog/blog_content_detail',{name:"0",login:params[0],alldata:row[0],menu:req.params.menu});
+                }
+            })
         }
     })
 
     // res.render('blog/blog_contentedit',{name:session,re_url:re_url,login:params[0],alldata:row[0]});
 });
 
+router.post('/reple/post',(req,res)=>{
+    var session = req.session.passport
+    if(session){
+        var reple_text = req.body.reple_data
+        var data = req.body.contenturl.split("/")
+        var title_no = data[7]
+        var blog_username = data[2]
+        var blog_menu = req.body.menu_data
+        var user_name = session.user[1]
+        var today = new Date();
+        var update_time = `${today.getFullYear()}-${today.getMonth()}-${today.getDate()} ${today.getHours()}:${today.getMinutes()}:${today.getSeconds()}`
+        var params = [user_name,reple_text,title_no,blog_username,blog_menu,update_time]
+        var sql = "insert into reple_content values(?,?,?,?,?,?)"
+
+        db.query(sql,params)
+    }
+    
+})
 
 
 module.exports = router;

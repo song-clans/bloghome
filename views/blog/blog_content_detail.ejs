@@ -15,8 +15,11 @@
           <div id ="div_con">
           <%if(name == "0"){%>
             <div id = "div_bloglogin" class="login" style="cursor: pointer;" onclick="return but_click()">로그인/회원가입</div>
+            <div id = "div_id" style="display: none;">0</div>
           <% }else{ %>
             <div id = "div_bloglogin" class="login_name"><%= name.user[0] %>님
+
+            <div id = "div_id" style="display: none;"><%=name.user[1] %></div>
               <form action ="/logout" method="POST">
                 <button type="submit">Logout</button>
               </form>
@@ -28,32 +31,69 @@
             <div id ="content">
                 <%- alldata.content %>
             </div>
-          
+            <form id="reple_form" name ="reple_form">
+              <div id ="menu" style="display: none;"><%=menu%></div>
+              <div><input type="text" id ="reple_text" name = "reple_text" /><input type="button" id="reple_button" value="등록" /></div>
+            </form>
+              <%if(reple){
+                for(var i=0; i < reple.length; i++){%>
+                  <div id='reple_div<%=i%>'><span name="reple_id"><%=reple[i].reple_id %></span> : <%=reple[i].reple_text %><span id='reple_span<%=i%>' style="cursor: pointer;" onclick="reple_edit()">수정</span><span>/</span><span id='reple_span<%=i%>' style="cursor: pointer;" onclick="reple_del()">삭제</span></div>
+                <%}
+              }%>
       </body>
       
 <script type="text/javascript" src="http://code.jquery.com/jquery-3.2.0.min.js" ></script>
 <script type="text/javascript">
-      function but_click(){
-        var url = location.pathname
-        location.href = "/blog_login"+url
-      }
-      function but_click2(){
-        var url = location.pathname
-        var re_url = url.replace("/blog_login","")
-        re_url = re_url.replace("/save_ok","")
-        location.href = re_url+"/edit"
-      }
+  // window.onload = function() {
+  //     var user_id = document.getElementById("div_id").innerText
+  //     var reple_id = document.getElementsByName("reple_id")
+  //     console.log(reple_id)
+  //     if(reple_id){
+  //       for(var i=0; i<reple_id.length; i++){
+  //         if(reple_id[i].innerText == reple_id)
+  //         console.log(reple_id[i].innerText)
+  //       }
+  //     }
+  //   };
+  
+  
+  $("#reple_button").click(function(){
+    var url_val = location.pathname
+    var menu = document.getElementById("menu").innerText
+    $.ajax({
+      url:"/reple/post",
+      data : {reple_data:document.getElementById("reple_text").value,contenturl:url_val,menu_data:menu},
+      type : 'POST'
+    })
+    var url = location.href
+    location.href = url
+  });
 
-      // window.onload = function() {
-        
-      // };
-      function menu_click(url_name){
-        // console.log(document.getElementById("menu"+i))
-        // console.log(location.pathname)
-        var basic_url = location.pathname.split('detail')
-        location.href = basic_url[0] +"detail/"+ url_name +"/1"
-        // location.href = location.pathname+"/detail/"+ document.getElementById("menu"+i).innerText+"/1"
-      }
+  function reple_edit(){
+    alert("수정")
+  } 
+
+  function reple_del(){
+    alert("삭제")
+  } 
+
+  function but_click(){
+    var url = location.pathname
+    location.href = "/blog_login"+url
+  }
+  function but_click2(){
+    var url = location.pathname
+    var re_url = url.replace("/blog_login","")
+    re_url = re_url.replace("/save_ok","")
+    location.href = re_url+"/edit"
+  }
+  function menu_click(url_name){
+    // console.log(document.getElementById("menu"+i))
+    // console.log(location.pathname)
+    var basic_url = location.pathname.split('detail')
+    location.href = basic_url[0] +"detail/"+ url_name +"/1"
+    // location.href = location.pathname+"/detail/"+ document.getElementById("menu"+i).innerText+"/1"
+  }
    </script>
 
 </html>

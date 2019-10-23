@@ -13,6 +13,7 @@ var s3 = new AWS.S3()
 
 var image_url = new Array()
 var image_name = new Array()
+var image_main = "init"
 
 var db = mysql.createConnection({
     host : process.env.DB_HOST,
@@ -53,6 +54,11 @@ var arrupload = multer({storage:multerS3({
         var update_file=`${process.env.AWS_HTTP_ARR}/${upfile_name}`
         image_url.push(update_file)
         image_name.push(file.originalname)
+        if(image_main == 'init'){
+            image_main = update_file;
+        }else{
+            console.log("데이터 있음")
+        }
 
         cb(null, upfile_name)
         if(session){
@@ -104,14 +110,17 @@ router.post('/blog/:user_name/:blog_name/detail/:menu/:page/save_ok',arrupload.a
             }
             var blog_detailurl = `/blog/${req.params.user_name}/${req.params.blog_name}/detail/${req.params.menu}/page/${title_no}`
             // if(session){
-            var param = [req.params.user_name,blog_detailurl,title,body,req.params.menu,title_no]
-            sql = "insert into blog_menutable values(?,?,?,?,?,?)"
+            var param = [req.params.user_name,blog_detailurl,title,body,req.params.menu,title_no,0,image_main]
+            sql = "insert into blog_menutable values(?,?,?,?,?,?,?,?)"
             db.query(sql,param)
+
+            image_main="init"
             // }
         })
     }
     image_name = []
     image_url = []
+    
     res.redirect(`/blog/${req.params.user_name}/${req.params.blog_name}/detail/${req.params.menu}/1`);
 })
 
