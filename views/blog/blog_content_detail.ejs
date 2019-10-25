@@ -5,27 +5,27 @@
 </head>
 <body>
         <div id ="div_root">
-          <div id='blog_top' style="height:180px; width:100%; text-align: center; overflow: hidden;" ><img src='<%=alldata.image_url%>' style = "width:100%; position : relative; top: <%=alldata.image_xpoint %>" /></div>
+          <div id='blog_top' style="height:180px; width:100%; text-align: center; overflow: hidden;" ><img src='<%=alldata.image_url%>' style = "cursor: pointer; width:100%; position : relative; top: <%=alldata.image_xpoint %>" onclick="home_go()" /></div>
           <div id = 'div_menu'>
               <% var menuarray = alldata.menu.split(',');
               for(var i=0; i<menuarray.length;i++) {%>
                   <div id = 'menu<%=i%>' name = 'menu<%=i%>' align ='center' style ="cursor:pointer;" onclick="return menu_click('<%=menuarray[i]%>')"><%=menuarray[i] %></div>
               <%};%>
           </div>
+          <div id = "div_marquee">asdasd</div>
+    <div id = "div_maingo" style="cursor: pointer;" onclick="main_go()">홈으로 가기</div>
           <div id ="div_con">
-          <%if(name == "0"){%>
+
+          <%if(name == "0"){ %>
             <div id = "div_bloglogin" class="login" style="cursor: pointer;" onclick="return but_click()">로그인/회원가입</div>
             <div id = "div_id" style="display: none;">0</div>
           <% }else{ %>
-            <div id = "div_bloglogin" class="login_name"><%= name.user[0] %>님
+            <div id = "div_bloglogin" class="login_name"><%= name.user[2] %>님
 
             <div id = "div_id" style="display: none;"><%=name.user[1] %></div>
               <form action ="/logout" method="POST">
                 <button type="submit">Logout</button>
               </form>
-              <%if(login == name.user[1]){ %>
-                  <button type="button" onclick="return but_click2()">블로그 수정</button>
-              <% } %>
             </div>
           <% } %>
             <div id ="content">
@@ -36,8 +36,18 @@
               <div><input type="text" id ="reple_text" name = "reple_text" /><input type="button" id="reple_button" value="등록" /></div>
             </form>
               <%if(reple){
+                var session_id = ""
+                if(name =="0"){
+                  session_id = 0
+                }else{
+                  session_id = name.user[1];
+                }
                 for(var i=0; i < reple.length; i++){%>
-                  <div id='reple_div<%=i%>'><span name="reple_id"><%=reple[i].reple_id %></span> : <%=reple[i].reple_text %><span id='reple_span<%=i%>' style="cursor: pointer;" onclick="reple_edit()">수정</span><span>/</span><span id='reple_span<%=i%>' style="cursor: pointer;" onclick="reple_del()">삭제</span></div>
+                  <div id='div_reple' name ='div_reple<%=i%>'>
+                    <span name="reple_nick"><%=reple[i].reple_nickname %></span> : <span id ="reple_val<%=i%>" name ="reple_val<%=i%>"><%=reple[i].reple_text %></span>
+                    <span id='reple_span<%=i%>' style="cursor: pointer; float: right;" onclick="reple_del('<%=reple[i].reple_no%>','<%=reple[i].content_menu%>','<%=reple[i].content_id %>','<%=reple[i].reple_id%>','<%= session_id %>','<%= reple[i].content_no%>')">삭제</span>
+                    <span style="float:right">/</span><span id='reple_span<%=i%>' style="cursor: pointer; float: right;" onclick="reple_edit('<%=reple[i].reple_no%>','<%=reple[i].content_menu%>','<%=reple[i].content_id %>','<%=reple[i].reple_id%>','<%= session_id %>','<%= reple[i].content_no%>','<%=i%>')">수정</span>
+                  </div>
                 <%}
               }%>
       </body>
@@ -68,24 +78,89 @@
     var url = location.href
     location.href = url
   });
+  function main_go(){
+    location.href = "/main_home"
+  }
+  function home_go(){
+    var url = location.pathname
+    url = url.split("/")
+    rel_url = "/"+url[1]+"/"+url[2]+"/"+url[3]
+    location.href = rel_url
+  }
 
-  function reple_edit(){
-    alert("수정")
+  function reple_edit(a,b,c,d,e,f,g){
+    
+    // reple_content
+    // a    reple_no
+    // b    content_menu
+    // c    content_id
+    // d    reple_id
+    // e    session_id    0이면 로그인 안함
+    // f    content_no
+    // g    i값
+    // console.log(a,"/",b,"/",c,"/",d,"/",e,"/",f)
+    // alert("수정")
+
+    if(d == e){
+      var input_yn = document.getElementById('edit_input')
+      
+      if(input_yn == null){
+        var input = document.createElement("input");
+        var div_add = document.getElementsByName("div_reple"+g)[0];
+        input.type = "text"
+        input.id = "edit_input"
+        input.name = "edit_input"
+        // input.align = "center"
+        // input.style.width ='80%'
+        input.value  = document.getElementsByName("reple_val"+g)[0].innerText
+        var input_but = document.createElement('input');
+        input_but.type = "button"
+        input_but.id = "edit_button"
+        input_but.name = "edit_button"
+        input_but.type="button"
+        input_but.value = "수정하기"
+        div_add.after(input_but);
+        div_add.after(input);
+
+        $("#edit_button").click(function(){
+          var change_text = document.getElementById("edit_input").value
+          $.ajax({
+            url:'/reple/edit',
+            data : {reple_no:a,reple_menu:b,reple_blogid:c,reple_id:d,content_no:f,text:change_text},
+            type : 'POST'
+          })
+          location.reload();
+        })
+
+      }
+    }else{
+      alert("글쓴이가 다름")
+    }
   } 
 
-  function reple_del(){
-    alert("삭제")
+  function reple_del(a,b,c,d,e,f){
+    // reple_content
+    // a    reple_no
+    // b    content_menu
+    // c    content_id
+    // d    reple_id
+    // e    session_id    0이면 로그인 안함
+    // f    content_no
+    // console.log(a,"/",b,"/",c,"/",d,"/",e,"/",f)
+    if(d == e){
+      $.ajax({
+        url : "/reple/del",
+        data : {reple_no:a,reple_menu:b,reple_blogid:c,reple_id:d,content_no:f},
+        type:"POST" 
+      })
+      location.reload();
+    }else{
+      alert("글쓴이가 다름")
+    }
   } 
 
   function but_click(){
-    var url = location.pathname
-    location.href = "/blog_login"+url
-  }
-  function but_click2(){
-    var url = location.pathname
-    var re_url = url.replace("/blog_login","")
-    re_url = re_url.replace("/save_ok","")
-    location.href = re_url+"/edit"
+    window.open("/login","login_form","width=200,hight=200")
   }
   function menu_click(url_name){
     // console.log(document.getElementById("menu"+i))

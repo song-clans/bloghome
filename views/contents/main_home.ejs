@@ -10,7 +10,7 @@
         </div>
         <div id ="div_login">
             <% if(name != "0"){ %>
-                <div><%= name.user[0] %>
+                <div><%= name.user[2] %>님
                     <form action ="/logout" method="POST">
                         <button type="submit">Logout</button>
                     </form>
@@ -26,7 +26,7 @@
                         </div>
                     <% } %>
                 <% }else { %>
-                    <div name = "signup"><a href="home_login">로그인/회원가입</a></div>
+                    <div name = "signup"><a href="javascript:void(0);" onclick="login_call()">로그인/회원가입</a></div>
                 <% } %>
         </div>
         <div id = "div_menu">
@@ -41,18 +41,39 @@
         </div>
         <div id ="div_con">
             <ol>
-                <% for(var i=0; i < data.length; i++){ %>
+                <%if(data){ 
+                    for(var i=0; i < data.length; i++){ %>
                     <div align="left">
-                        <a href ="<%=data[i].link %>">
-                            <img src = "<%=data[i].addr %>" width = "250px" />
+                        <!-- <a href ="<%=data[i].blog_detailurl %>"> -->
+                        <a href ="javascript:void(0);" onclick="view_update('<%=data[i].blog_detailurl %>','<%=data[i].title_no%>','<%=data[i].de_menu%>','<%=data[i].content_id%>')">
+                            <img src = "<%=data[i].main_img_url %>" width = "600px" height="300px" />
                         </a>
                     </div>
-                <% } %>
+                <% }
+                 } %>
             </ol>
         </div>
     </div>
  </body>
+ <script type="text/javascript" src="http://code.jquery.com/jquery-3.2.0.min.js" ></script>
 <script>
+
+    function view_update(de_url,title_no,de_menu,content_id){
+        // console.log(de_url)
+        // console.log(de_menu)
+        // console.log(title_no)
+        // console.log(content_id)
+        $.ajax({
+        url:"/main_home/viewup",
+        data : {de_menu:de_menu,title_no:title_no,content_id:content_id},
+        type : 'POST'
+      })
+        location.href = de_url
+    }
+
+    function login_call(){
+        window.open("/login","login_form","width=200,hight=200")
+    }
 
 </script>
 

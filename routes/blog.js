@@ -107,7 +107,7 @@ router.get('/blog/:user_name/:blog_name/detail/:menu/:page', (req, res)=>{
     var sql = "select * from blog_table where id = ?"
     db.query(sql,params,(err,row)=>{
         if(row[0]){
-            sql = "SELECT * FROM blog_table AS a join blog_menutable AS b ON (a.id = b.content_id) WHERE a.id = ? AND b.de_menu = ?"
+            sql = "SELECT * FROM blog_table AS a join blog_menutable AS b ON (a.id = b.content_id) WHERE a.id = ? AND b.de_menu = ? order by b.title_no desc"
             params = [req.params.user_name,menu_params]
             db.query(sql,params,(err,rows)=>{
 
@@ -169,14 +169,36 @@ router.post('/reple/post',(req,res)=>{
         var blog_username = data[2]
         var blog_menu = req.body.menu_data
         var user_name = session.user[1]
+        var nick_name = session.user[2]
         var today = new Date();
         var update_time = `${today.getFullYear()}-${today.getMonth()}-${today.getDate()} ${today.getHours()}:${today.getMinutes()}:${today.getSeconds()}`
-        var params = [user_name,reple_text,title_no,blog_username,blog_menu,update_time]
-        var sql = "insert into reple_content values(?,?,?,?,?,?)"
-
-        db.query(sql,params)
+        var sel_sql="select reple_no from reple_content where content_menu=? and content_no=? and content_id=? order by reple_no desc"
+        var sel_par = [blog_menu,title_no,blog_username]
+        db.query(sel_sql,sel_par,(err,row)=>{
+            var count = 0
+            if(row[0]){
+                count = row[0].reple_no + 1
+            }
+            var params = [user_name,nick_name,reple_text,title_no,blog_username,blog_menu,count,"none",update_time]
+            var sql = "insert into reple_content values(?,?,?,?,?,?,?,?,?)"
+            db.query(sql,params)
+        })
     }
-    
+})
+
+router.post('/reple/del',(req,res)=>{
+    // console.log(req.body)
+    var sql = "delete from reple_content where reple_id=? and reple_no = ? and content_id =? and content_menu = ? and content_no=?"
+    var params = [req.body.reple_id,req.body.reple_no,req.body.reple_blogid,req.body.reple_menu,req.body.content_no]
+    db.query(sql,params);
+})
+
+router.post('/reple/edit',(req,res)=>{
+    //update user_table set my_home='Y' where id ="${session.user[1]}" and name ="${session.user[0]}"
+    var sql = "update reple_content set reple_text=? where reple_id=? and reple_no = ? and content_id =? and content_menu = ? and content_no=?"
+    console.log(req.body)
+    var params = [req.body.text,req.body.reple_id,req.body.reple_no,req.body.reple_blogid,req.body.reple_menu,req.body.content_no]
+    db.query(sql,params);
 })
 
 

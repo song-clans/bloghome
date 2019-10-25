@@ -3,6 +3,13 @@
 </head>
 <body>
 <script type='text/javascript'>
+     window.onload = function() {
+          console.log("A")
+          opener.parent.location.reload();
+          window.close();  
+     }
+
+
 var img_L = 0;
 var img_T = 0;
 var targetObj;

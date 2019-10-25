@@ -27,9 +27,6 @@ var upload = multer({storage:multerS3({
     s3:s3,
     bucket:`${process.env.AWS_S3_NAME}`,
     key:function(req,file,cb){
-
-        console.log("asdasd",file)
-
         var upfile_name = Date.now() + "-" + file.originalname 
         var session = req.session.passport
         var update_file=`${process.env.AWS_HTTP}/${upfile_name}`
@@ -74,6 +71,7 @@ router.post('/blog/:user_name/:blog_name/detail/:menu/:page/save_ok',arrupload.a
     var be_filename = req.body.popContent.match(/id="([^"]+)/ig)
     var title = req.body.subject
     var body = req.body.popContent
+    var title_no = 0
     if(be_filename){
         body = req.body.popContent.replace(/id([^>]+)/ig,"a")
         for(var i=0; i<image_url.length; i++){
@@ -102,12 +100,14 @@ router.post('/blog/:user_name/:blog_name/detail/:menu/:page/save_ok',arrupload.a
     if(title){
         var sql = "select * from blog_menutable where content_id=? and de_menu =? order by title_no desc"
         var sel_par = [req.params.user_name,req.params.menu]
+
         db.query(sql,sel_par,(err,row)=>{
-            if(row){
+            if(row[0]){
                 title_no = row[0].title_no + 1
             }else{
                 title_no = 1
             }
+
             var blog_detailurl = `/blog/${req.params.user_name}/${req.params.blog_name}/detail/${req.params.menu}/page/${title_no}`
             // if(session){
             var param = [req.params.user_name,blog_detailurl,title,body,req.params.menu,title_no,0,image_main]

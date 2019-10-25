@@ -5,24 +5,23 @@
 </head>
 <body>
   <div id ="div_root">
-    <div id='blog_top' style="height:180px; width:100%; text-align: center; overflow: hidden;" ><img src='<%=alldata.image_url%>' style = "width:100%; position : relative; top: <%=alldata.image_xpoint %>" /></div>
+    <div id='blog_top' style="height:180px; width:100%; text-align: center; overflow: hidden;" ><img src='<%=alldata.image_url%>' style = "cursor: pointer; width:100%; position : relative; top: <%=alldata.image_xpoint %>;" onclick="home_go()" /></div>
     <div id = 'div_menu'>
         <% var menuarray = alldata.menu.split(',');
         for(var i=0; i<menuarray.length;i++) {%>
             <div id = 'menu<%=i%>' name = 'menu<%=i%>' align ='center' style ="cursor:pointer;" onclick="return menu_click('<%=menuarray[i]%>')"><%=menuarray[i] %></div>
         <%};%>
     </div>
+    <div id = "div_marquee">asdasd</div>
+    <div id = "div_maingo" style="cursor: pointer;" onclick="main_go()">홈으로 가기</div>
     <div id ="div_con">
     <%if(name == "0"){%>
       <div id = "div_bloglogin" class="login" style="cursor: pointer;" onclick="return but_click()">로그인/회원가입</div>
     <% }else{ %>
-      <div id = "div_bloglogin" class="login_name"><%= name.user[0] %>님
+      <div id = "div_bloglogin" class="login_name"><%= name.user[2] %>님
         <form action ="/logout" method="POST">
           <button type="submit">Logout</button>
         </form>
-        <%if(login == name.user[1]){ %>
-            <button type="button" onclick="return but_click2()">블로그 수정</button>
-        <% } %>
       </div>
     <% } %>
     <div id = "div_input">
@@ -85,28 +84,30 @@
 <script type="text/javascript" src="http://code.jquery.com/jquery-3.2.0.min.js" ></script>
 
 <script type="text/javascript">
-      function but_click(){
-        var url = location.pathname
-        location.href = "/blog_login"+url
-      }
-      function but_click2(){
-        var url = location.pathname
-        var re_url = url.replace("/blog_login","")
-        re_url = re_url.replace("/save_ok","")
-        location.href = re_url+"/edit"
-      }
+  function but_click(){
+    window.open("/login","login_form","width=200,hight=200")
+  }
+  function main_go(){
+    location.href = "/main_home"
+  }
+  function home_go(){
+    var url = location.pathname
+    url = url.split("/")
+    rel_url = "/"+url[1]+"/"+url[2]+"/"+url[3]
+    location.href = rel_url
+  }
 
-      // window.onload = function() {
-        
-      // };
-      function menu_click(url_name){
-        var basic_url = location.pathname.split('detail')
-        location.href = basic_url[0] +"detail/"+ url_name +"/1"
-      }
-      function contentadd(){
-        var url = location.pathname
-        location.href = url+"/edit"
-      }
-   </script>
+  // window.onload = function() {
+    
+  // };
+  function menu_click(url_name){
+    var basic_url = location.pathname.split('detail')
+    location.href = basic_url[0] +"detail/"+ url_name +"/1"
+  }
+  function contentadd(){
+    var url = location.pathname
+    location.href = url+"/edit"
+  }
+</script>
 
 </html>

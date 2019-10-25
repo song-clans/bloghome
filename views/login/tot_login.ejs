@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+    <head>
+    </head>
+    <body>
+            <form action="/login" method="POST" name="login_form" id="login_form">
+                <input type="text" id="username" name="username" />
+                <input type="password" id="password" name="password"/>
+                <input type="button" id="login_button" onclick="login_sumit()" value="로그인" />
+            </form>
+
+            <input type ="button" value ="회원가입" onclick = "location.href='/sign_up'">
+    </body>
+
+    <script type="text/javascript" src="http://code.jquery.com/jquery-3.2.0.min.js" ></script>
+    <script type="text/javascript">
+        function login_sumit(){
+            document.getElementById("login_form").submit();
+        }
+    </script>
+
+</html>

@@ -21,16 +21,13 @@
         <%};%>
     </div>
     <div id ="div_con">
-    <%if(name == "0"){%>
+    <%if(name == "0"){%>  <!--없애야함-->
       <div id = "div_bloglogin" class="login" style="cursor: pointer;" onclick="return but_click()">로그인/회원가입</div>
     <% }else{ %>
-      <div id = "div_bloglogin" class="login_name"><%= name.user[0] %>님
+      <div id = "div_bloglogin" class="login_name"><%= name.user[2] %>님
         <form action ="/logout" method="POST">
           <button type="submit">Logout</button>
         </form>
-        <%if(login == name.user[1]){ %>
-            <button type="button" onclick="return but_click2()">블로그 수정</button>
-        <% } %>
       </div>
     <% } %>
 
@@ -75,146 +72,140 @@
 </body>
 
 <script type="text/javascript">
-    function but_click(){
-      var url = location.pathname
-      location.href = "/blog_login"+url
-    }
-    function but_click2(){
-      var url = location.pathname
-      var re_url = url.replace("/blog_login","")
-      re_url = re_url.replace("/save_ok","")
-      location.href = re_url+"/edit"
-    }
+  function but_click(){
+    var url = location.pathname
+    location.href = "/blog_login"+url
+  }
 
-    // window.onload = function() {
-      
-    // };
-    function menu_click(url_name){
-      var basic_url =location.pathname.split('detail')
-      location.href = basic_url[0] +"detail/"+ url_name +"/1"
-    }
-
+  // window.onload = function() {
     
-    var form_data = new FormData(document.getElementById('upload_form'))
-    var oEditors = [];
-    nhn.husky.EZCreator.createInIFrame({
-    oAppRef: oEditors,
-    elPlaceHolder: "popContent",  //textarea ID
-    sSkinURI: "/public/smartEditor/SmartEditor2Skin.html",  //skin경로
-    fCreator: "createSEditor2",
-    // fOnAppLoad : function(){
-    //   var img = '<img src="https://tripco-imagefile.s3.ap-northeast-2.amazonaws.com/blog_image/1571717975823-KakaoTalk_20191008_113359061.jpg" style="width:auto; height:300px; overflow:hidden;">'
-    //   console.log(img)
-		// 	oEditors.getById["popContent"].exec("PASTE_HTML", [img]);
-		// },
-    });
+  // };
+  function menu_click(url_name){
+    var basic_url =location.pathname.split('detail')
+    location.href = basic_url[0] +"detail/"+ url_name +"/1"
+  }
 
-    $("#success").click(function(){
-      // var input_test = document.getElementById("edit_file_sel2")
-      // input_test.push(test)
-      //if(confirm("저장하시겠습니까?")) { // id가 smarteditor인 textarea에 에디터에서 대입
-      oEditors.getById["popContent"].exec("UPDATE_CONTENTS_FIELD", []); 
-      // console.log(oEditors.getById["popContent"])
-      // 이부분에 에디터 validation 검증
-      document.getElementById("edit_file_sel").value = ""
-      var url_val = location.href
-      url_val = url_val.replace("edit","save_ok")
-      $.ajax({
-        url:url_val,
-        processData : false,
-        contentType : false,
-        data : form_data,
-        type : 'POST'
-      })
-      $("#upload_form").submit();
-    });
+  
+  var form_data = new FormData(document.getElementById('upload_form'))
+  var oEditors = [];
+  nhn.husky.EZCreator.createInIFrame({
+  oAppRef: oEditors,
+  elPlaceHolder: "popContent",  //textarea ID
+  sSkinURI: "/public/smartEditor/SmartEditor2Skin.html",  //skin경로
+  fCreator: "createSEditor2",
+  // fOnAppLoad : function(){
+  //   var img = '<img src="https://tripco-imagefile.s3.ap-northeast-2.amazonaws.com/blog_image/1571717975823-KakaoTalk_20191008_113359061.jpg" style="width:auto; height:300px; overflow:hidden;">'
+  //   console.log(img)
+  // 	oEditors.getById["popContent"].exec("PASTE_HTML", [img]);
+  // },
+  });
 
+  $("#success").click(function(){
+    // var input_test = document.getElementById("edit_file_sel2")
+    // input_test.push(test)
+    //if(confirm("저장하시겠습니까?")) { // id가 smarteditor인 textarea에 에디터에서 대입
+    oEditors.getById["popContent"].exec("UPDATE_CONTENTS_FIELD", []); 
+    // console.log(oEditors.getById["popContent"])
+    // 이부분에 에디터 validation 검증
+    document.getElementById("edit_file_sel").value = ""
+    var url_val = location.href
+    url_val = url_val.replace("edit","save_ok")
+    $.ajax({
+      url:url_val,
+      processData : false,
+      contentType : false,
+      data : form_data,
+      type : 'POST'
+    })
+    $("#upload_form").submit();
+  });
+
+  
+  function pasteHTML(targetObj) {
+    var files = targetObj.files;
     
-    function pasteHTML(targetObj) {
-      var files = targetObj.files;
+    for ( var i = 0; i < files.length; i++) {
+      var file = files[i];
+      var imageType = /image.*/; //이미지 파일일경우만.. 뿌려준다.
+      if (!file.type.match(imageType))
+        continue;
+
+      var img = document.createElement("img");
+      img.id = file.name;
+      img.classList.add("obj");
+      img.file = file;
+      // img.style.position = 'relative';
+      // img.style.left = '0px';
+      img.style.height = '150px';
+      img.style.width = '150px';
+      // img.style.max-width = '100%';
+      // img.style.cursor = 'pointer';
+      // img.style.cursor = 'hand';
+      img.style.overflow = 'hidden';
+      var preview = document.getElementById("preview");
+      preview.appendChild(img);
+      // File_List.push(file)
+      // test.push(file)
+      form_data.append("edit_file_sel",file)
+      // console.log(File_List)
+      // console.log("c",document.getElementById('edit_file_sel').files)
       
-      for ( var i = 0; i < files.length; i++) {
-        var file = files[i];
-        var imageType = /image.*/; //이미지 파일일경우만.. 뿌려준다.
-        if (!file.type.match(imageType))
-          continue;
+      // console.log(test)
+      // console.log(form_test.getAll("edit_file_sel"))
+      // var tt = form_test.keys();
+      // console.log(tt.next());
+      // console.log(tt.next());
+      // console.log(tt.next());
 
-        var img = document.createElement("img");
-        img.id = file.name;
-        img.classList.add("obj");
-        img.file = file;
-        // img.style.position = 'relative';
-        // img.style.left = '0px';
-        img.style.height = '150px';
-        img.style.width = '150px';
-        // img.style.max-width = '100%';
-        // img.style.cursor = 'pointer';
-        // img.style.cursor = 'hand';
-        img.style.overflow = 'hidden';
-        var preview = document.getElementById("preview");
-        preview.appendChild(img);
-        // File_List.push(file)
-        // test.push(file)
-        form_data.append("edit_file_sel",file)
-        // console.log(File_List)
-        // console.log("c",document.getElementById('edit_file_sel').files)
-        
-        // console.log(test)
-        // console.log(form_test.getAll("edit_file_sel"))
-        // var tt = form_test.keys();
-        // console.log(tt.next());
-        // console.log(tt.next());
-        // console.log(tt.next());
-
-        // img.addEventListener("mousedown", mouse_onclick, false);
-        if (window.FileReader) { // FireFox, Chrome, Opera 확인.
-            var reader = new FileReader();
-            reader.onloadend = (function(aImg) {
-                return function(e) {
-                    aImg.src = e.target.result;
-                    var textarea_img = aImg.outerHTML
-                    oEditors.getById["popContent"].exec("PASTE_HTML", [textarea_img]);
-                };
-            })(img);
-            
-            reader.readAsDataURL(file);
-            
-        } else { // safari is not supported FileReader
-            alert('not supported FileReader');
-            if (!document.getElementById("sfr_preview_error_"
-                    + previewId)) {
-                var info = document.createElement("p");
-                info.id = "sfr_preview_error_" + previewId;
-                info.innerHTML = "not supported FileReader";
-                preview.insertBefore(info, null);
-            }
-        }
+      // img.addEventListener("mousedown", mouse_onclick, false);
+      if (window.FileReader) { // FireFox, Chrome, Opera 확인.
+          var reader = new FileReader();
+          reader.onloadend = (function(aImg) {
+              return function(e) {
+                  aImg.src = e.target.result;
+                  var textarea_img = aImg.outerHTML
+                  oEditors.getById["popContent"].exec("PASTE_HTML", [textarea_img]);
+              };
+          })(img);
+          
+          reader.readAsDataURL(file);
+          
+      } else { // safari is not supported FileReader
+          alert('not supported FileReader');
+          if (!document.getElementById("sfr_preview_error_"
+                  + previewId)) {
+              var info = document.createElement("p");
+              info.id = "sfr_preview_error_" + previewId;
+              info.innerHTML = "not supported FileReader";
+              preview.insertBefore(info, null);
+          }
       }
-      document.getElementById("edit_file_sel").value = ""
-      // console.log(form_test.getAll('file'))
-      // var image_name = document.getElementById("file_sel").files
-      // var test =document.getElementById("file_sel").value
-      // console.log(test)
-      
-      // console.log(oEditors.getById["PopContent"]);
-      
-      // var popContent = document.getElementById('popContent');
-      // console.log(popContent)
-      // var a = "<img src='https://s3.ap-northeast-2.amazonaws.com/tripco-imagefile/1571021724217-fadaf.png' />"
-      // <img src='https://s3.ap-northeast-2.amazonaws.com/tripco-imagefile/1570758399608-KakaoTalk_20191008_113359061.jpg' />
-      // popContent.appendChild(img)
-      // console.log(popContent)
-      // var test = oEditors.getById["popContent"]
-      // console.log(test)
-      // oEditors.getById["popContent"].exec("LOAD_CONTENTS_FIELD",[test]);
-      // parent.se2_iframe.location.reload(true);
-      // var test = "<img src='https://s3.ap-northeast-2.amazonaws.com/tripco-imagefile/1570758399608-KakaoTalk_20191008_113359061.jpg' />"
-      // popContent.onload = function(){
-      //   popContent.appendChild(test)
-      // }
-
     }
+    document.getElementById("edit_file_sel").value = ""
+    // console.log(form_test.getAll('file'))
+    // var image_name = document.getElementById("file_sel").files
+    // var test =document.getElementById("file_sel").value
+    // console.log(test)
+    
+    // console.log(oEditors.getById["PopContent"]);
+    
+    // var popContent = document.getElementById('popContent');
+    // console.log(popContent)
+    // var a = "<img src='https://s3.ap-northeast-2.amazonaws.com/tripco-imagefile/1571021724217-fadaf.png' />"
+    // <img src='https://s3.ap-northeast-2.amazonaws.com/tripco-imagefile/1570758399608-KakaoTalk_20191008_113359061.jpg' />
+    // popContent.appendChild(img)
+    // console.log(popContent)
+    // var test = oEditors.getById["popContent"]
+    // console.log(test)
+    // oEditors.getById["popContent"].exec("LOAD_CONTENTS_FIELD",[test]);
+    // parent.se2_iframe.location.reload(true);
+    // var test = "<img src='https://s3.ap-northeast-2.amazonaws.com/tripco-imagefile/1570758399608-KakaoTalk_20191008_113359061.jpg' />"
+    // popContent.onload = function(){
+    //   popContent.appendChild(test)
+    // }
 
-  </script>
+  }
+
+</script>
 
 </html>
