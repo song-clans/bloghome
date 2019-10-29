@@ -42,7 +42,7 @@ router.get('/main_home', (req, res)=>{
         }
 
         var session = req.session.passport
-        console.log(session)
+        // console.log(session)
         if (session){
             sql = "select my_home from user_table where name =? and id=?"
             var params = [session.user[0],session.user[1]]
@@ -82,6 +82,10 @@ router.post('/main_home/viewup', (req,res)=>{
 
 router.get('/map', (req, res)=>{
     res.render('contents/map');
+});
+
+router.get('/map2', (req, res)=>{
+    res.render('contents/map2');
 });
 
 

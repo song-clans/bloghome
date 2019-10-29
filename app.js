@@ -25,6 +25,7 @@ app.use(session({
 app.use(flash());
 app.use(passport.initialize());
 
+
 app.set('views', __dirname+'/views');
 app.set('view engine', 'ejs');
 app.set('html',require('ejs').renderFile);

@@ -3,13 +3,17 @@
     <head>
     </head>
     <body>
-            <form action="/login" method="POST" name="login_form" id="login_form">
-                <input type="text" id="username" name="username" />
-                <input type="password" id="password" name="password"/>
-                <input type="button" id="login_button" onclick="login_sumit()" value="로그인" />
-            </form>
+        <form action="/login" method="POST" name="login_form" id="login_form">
+            <input type="text" id="username" name="username" />
+            <input type="password" id="password" name="password"/>
+            <input type="button" id="login_button" onclick="login_sumit()" value="로그인" />
+        </form>
 
-            <input type ="button" value ="회원가입" onclick = "location.href='/sign_up'">
+        <input type ="button" value ="회원가입" onclick = "location.href='/sign_up'">
+        
+        <input type="button" id="google_button" onclick="location.href='/auth/google'" value= "구글 로그인" />
+        <input type="button" id="facebook_button" onclick="location.href='/auth/facebook'" value= "페이스북 로그인" />
+        
     </body>
 
     <script type="text/javascript" src="http://code.jquery.com/jquery-3.2.0.min.js" ></script>
@@ -17,6 +21,7 @@
         function login_sumit(){
             document.getElementById("login_form").submit();
         }
+
     </script>
 
 </html>

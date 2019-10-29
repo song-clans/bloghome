@@ -110,8 +110,8 @@ router.post('/blog/:user_name/:blog_name/detail/:menu/:page/save_ok',arrupload.a
 
             var blog_detailurl = `/blog/${req.params.user_name}/${req.params.blog_name}/detail/${req.params.menu}/page/${title_no}`
             // if(session){
-            var param = [req.params.user_name,blog_detailurl,title,body,req.params.menu,title_no,0,image_main]
-            sql = "insert into blog_menutable values(?,?,?,?,?,?,?,?)"
+            var param = [req.params.user_name,blog_detailurl,title,body,req.params.menu,title_no,0,image_main,0]
+            sql = "insert into blog_menutable values(?,?,?,?,?,?,?,?,?)"
             db.query(sql,param)
 
             image_main="init"

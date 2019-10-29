@@ -63,7 +63,7 @@ router.post('/react_user_save', (req,res)=>{
     var profile_image_url = req.body.profile_image_url
     var params =[email,firstname,lastname,nickname,home_top_image,profile_image_url]
 
-    console.log(req.body)
+    // console.log(req.body)
 
     var sql = 'insert into react_test_user (email,firstname,lastname,nickname,home_top_image,profile_image_url) values (?,?,?,?,?,?)'
     // console.log(sql)
@@ -93,7 +93,7 @@ router.post('/react_test_contents', (req,res)=>{
 
 router.post('/react_content_select', (req,res)=>{
     var email = req.body.email
-    console.log(req.body)
+    // console.log(req.body)
 
     var sql = `select * from react_test_content where email="${email}"`
     // console.log(sql)
@@ -101,6 +101,17 @@ router.post('/react_content_select', (req,res)=>{
         res.json(row)
     })
     // console.log("update ok"))
+})
+
+router.post('/react_native_login',(req,res)=>{
+    console.log(req.body)
+    if(req.body[0].providerId == "google.com"){
+        console.log("googl")
+    }else if(req.body[0].providerId == "facebook.com"){
+        console.log("face")
+    }else{
+        console.log("잘못된 경로")
+    }
 })
 
 module.exports = router;

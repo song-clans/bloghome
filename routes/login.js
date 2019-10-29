@@ -3,6 +3,7 @@ var mysql = require('mysql');
 var bodyParser = require('body-parser');
 var cookieParser = require('cookie-parser');
 var passport = require('passport')
+
 var LocalStrategy = require('passport-local').Strategy;
 const router = express.Router();
 const crypto = require('crypto');
@@ -27,10 +28,21 @@ app.use(bodyParser.json());
 
 passport.serializeUser((user,done)=>{
     var user_data = new Array();
-    user_data[0] = user.name;
-    user_data[1] = user.id;
-    user_data[2] = user.nickname;
 
+    if(user.provider=="google"){
+        user_data[0] = user.displayName
+        user_data[1] = user.emails[0].value
+        user_data[2] = user.displayName
+
+    }else if(user.provider=="facebook"){
+        user_data[0] = user.displayName;
+        user_data[1] = user.emails[0].value;
+        user_data[2] = user.displayName;
+    }else{
+        user_data[0] = user.name;
+        user_data[1] = user.id;
+        user_data[2] = user.nickname;
+    }
     done(null,user_data);
 });
 
@@ -41,13 +53,100 @@ passport.deserializeUser((id,done)=>{
     });
 });
 
+
+var GoogleStrategy = require( 'passport-google-oauth20' ).Strategy
+
+passport.use(new GoogleStrategy({
+        clientID: process.env.GOOGLE_CLIENT_ID,
+        clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+        callbackURL: 'http://localhost:8080/auth/google/callback',
+        userProfileURL: "https://www.googleapis.com/oauth2/v3/userinfo",
+    }, function(accessToken, refreshToken, profile, done) {
+        process.nextTick(function() {
+            user = profile;
+            return done(null, user);
+        });
+    }
+));
+
+router.get('/auth/google', passport.authenticate('google', { scope:
+    ['profile','email','openid']}),function(req,res){
+    });
+
+
+router.get('/auth/google/callback', passport.authenticate( 'google', {failureRedirect: '/login' }),
+    function(req, res) {
+        var session = req.session.passport;
+        var sql ="select * from user_table where id =?"
+        var params = [session.user[1]]
+        console.log(session)
+        db.query(sql,params,(err,row)=>{
+            if(row[0]){
+                console.log("이미 있음 접속 ok")
+            }else{
+                sql = 'insert into user_table (id,password,nickname,name) values (?,?,?,?)'
+                var cipher = crypto.createCipher('aes192',session.user[1])
+                cipher.update("googlelogin",'utf8','base64');
+                var cipherpassword = cipher.final('base64');
+
+                params = [session.user[1],cipherpassword,session.user[2],session.user[0]]
+
+                db.query(sql,params)
+            }
+            res.render('login/login_ok')
+        })
+});
+
+var FacebookStrategy = require('passport-facebook').Strategy
+
+passport.use(new FacebookStrategy({
+        clientID: process.env.FACEBOOK_CLIENT_ID,
+        clientSecret: process.env.FACEBOOK_CLIENT_SECRET,
+        callbackURL: 'http://localhost:8080/auth/facebook/callback',
+        profileFields:['id','email','displayName']
+    }, function(accessToken, refreshToken, profile, done) {
+        process.nextTick(function() {
+            user = profile;
+            return done(null, user);
+        });
+    }
+));
+
+router.get('/auth/facebook', passport.authenticate('facebook', { scope:
+    ['public_profile','email']}),function(req,res){
+    });
+
+
+router.get('/auth/facebook/callback', passport.authenticate( 'facebook', {failureRedirect: '/login' }),
+    function(req, res) {
+        var session = req.session.passport;
+        var sql ="select * from user_table where id =?"
+        var params = [session.user[1]]
+        console.log(session)
+        db.query(sql,params,(err,row)=>{
+            if(row[0]){
+                console.log("이미 있음 접속 ok")
+            }else{
+                sql = 'insert into user_table (id,password,nickname,name) values (?,?,?,?)'
+                var cipher = crypto.createCipher('aes192',session.user[1])
+                cipher.update("facebooklogin",'utf8','base64');
+                var cipherpassword = cipher.final('base64');
+
+                params = [session.user[1],cipherpassword,session.user[2],session.user[0]]
+
+                db.query(sql,params)
+            }
+            res.render('login/login_ok')
+        })
+});
+
+
 passport.use(new LocalStrategy({
     usernameField : 'username',
     passwordField : 'password',
 }, (username,password,done)=>{
     db.query(`select * from user_table where id="${username}"`,(err,rows)=>{
         var user = rows[0];
-        //PASSWORD 데이터베이스에 가져와서 복호화
         if(user){
             var decipher = crypto.createDecipher('aes192', username);
             decipher.update(user.password, 'base64', 'utf8');
@@ -66,70 +165,6 @@ passport.use(new LocalStrategy({
     })
 }
 ))
-
-
-
-// router.route('/home_login')
-// .get((req,res)=>{
-
-//     var session_err = req.session.flash;
-
-//     if(session_err){
-//         if(session_err.error == "password"){
-//             // res.send("비번 틀림")
-//         }
-//         else{
-//             // res.send("아이디 틀림")
-//         }
-//     }   //오류 부분
-
-//     var session = req.session.passport
-//     var sql = "select * from home"
-//     db.query(sql,function(err,rows){
-//         if(err) {
-//             console.log(err);
-//             res.status(500).send('Internal Server Error')
-//         }
-//         console.log(session)
-//         if (session){
-//             sql = "select my_home from user_table where name =? and id=?"
-//             var params = [session.user[0],session.user[1]]
-//             db.query(sql,params,(err,row)=>{
-//                 if(err){
-//                     console.log("user_talbe",err);
-//                 }
-
-//                 var data_yn = row[0].my_home
-//                 // console.log(data_yn)
-//                 if(data_yn == "Y"){
-//                     sql = `select * from blog_table where id = '${session.user[1]}'`
-//                     db.query(sql,(err,blog_row)=>{
-//                         if(err){
-//                             console.log("blog_table",err)
-//                         }
-//                         var blog_url = "http://localhost:8080/"+blog_row[0].blog_url
-
-//                         res.render('contents/main_home', {data:rows,name:session,data_yn:data_yn,blog_url:blog_url})
-//                     })
-//                 }else{
-//                     res.render('contents/main_home', {data:rows,name:session,data_yn:data_yn})
-//                 }
-//             })
-//         }else{
-//             res.render('login/home_login')
-//         }
-//     });
-
-// }).post(passport.authenticate('local',{
-//     successRedirect:'/home_login',
-//     failureRedirect:'/home_login',
-//     failureFlash:true
-// }));
-
-// router.get('/blog_login',(req,res)=>{
-//     res.render('login/blog_login');
-// })
-
 
 router.get('/login',(req,res)=>{
     var session_err = req.session.flash;
@@ -158,31 +193,6 @@ router.get('/login',(req,res)=>{
 router.get('/login_ok', (req,res)=>{
     res.render('login/login_ok')
 })
-
-
-
-// router.route('/blog_login/:url1/:url2/:url3')
-// .get((req,res)=>{
-//     var session_err = req.session.flash;
-
-//     if(session_err){
-//         if(session_err.error == "password"){
-//             // res.send("비번 틀림")
-//         }
-//         else{
-//             // res.send("아이디 틀림")
-//         }
-//     }   //오류 부분
-    
-//     res.render('login/blog_login',{url:req.url})
-// })
-
-// router.post('/blog_login/:url1/:url2/:url3',passport.authenticate('local'),(req,res)=>{
-//     var url = req.body.url
-//     var re_url = url.replace("/blog_login","")
-//     res.redirect(re_url);
-// })
-
 
 
 //로그아웃 부분 세션 없애기
