@@ -71,7 +71,11 @@
                 <%
               }%>
               </td>
-              <td style="text-align:center; cursor: pointer;" onclick="return contentadd()">글쓰기</td>
+              <%if(name != "0" && alldata.id == name.user[1]){%>
+                <td style="text-align:center; cursor: pointer;" onclick="return contentadd()">글쓰기</td>
+              <%}else{%>
+                <td></td>
+              <%}%>
             </th>
           </tr>
         </tbody>

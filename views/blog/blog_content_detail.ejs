@@ -73,11 +73,21 @@
     $.ajax({
       url:"/reple/post",
       data : {reple_data:document.getElementById("reple_text").value,contenturl:url_val,menu_data:menu},
-      type : 'POST'
+      type : 'POST',
     })
-    var url = location.href
-    location.href = url
+
+    sleep(100)
+
+    location.href = location.href
+    
+
   });
+
+  function sleep (delay) {
+   var start = new Date().getTime();
+   while (new Date().getTime() < start + delay);
+  }
+
   function main_go(){
     location.href = "/main_home"
   }

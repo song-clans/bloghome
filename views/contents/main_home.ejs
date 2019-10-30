@@ -15,19 +15,12 @@
                         <button type="submit">Logout</button>
                     </form>
                 </div>
-                    <% if(data_yn =="Y"){ %>
-                        <div>
-                            <input type = "button" value="블로그 가기" onclick="location.href = '<%= blog_url %>'">
-                        </div>
-                    <% } else{ %>
-                        <div>
-                            <!-- <button type = "submit"><a href="/blog_create">블로그 만들기</button></a> -->
-                            <input type="button" value="블로그 만들기" onclick="location.href='/blog_create' ">
-                        </div>
-                    <% } %>
-                <% }else { %>
-                    <div name = "signup"><a href="javascript:void(0);" onclick="login_call()">로그인/회원가입</a></div>
-                <% } %>
+                    <div>
+                        <input type = "button" value="블로그 가기" onclick="location.href = '<%= blog_url %>'">
+                    </div>
+            <% }else { %>
+                <div name = "signup"><a href="javascript:void(0);" onclick="login_call()">로그인/회원가입</a></div>
+            <% } %>
         </div>
         <div id = "div_menu">
             <div class="nav flex-column nav-pills" id="v-pills-tab" role="tablist" aria-orientation="vertical" style="border: 1px solid #48BAE4; height: auto; width: 100%;">

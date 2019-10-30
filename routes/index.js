@@ -42,31 +42,20 @@ router.get('/main_home', (req, res)=>{
         }
 
         var session = req.session.passport
-        // console.log(session)
+        console.log(session)
         if (session){
-            sql = "select my_home from user_table where name =? and id=?"
-            var params = [session.user[0],session.user[1]]
-            db.query(sql,params,(err,row)=>{
+            if(err){
+                console.log("user_table",err);
+            }
+            sql = `select * from blog_table where id = '${session.user[1]}'`
+            db.query(sql,(err,blog_row)=>{
                 if(err){
-                    console.log("user_talbe",err);
+                    console.log("blog_table",err)
                 }
+                var blog_url = "http://localhost:8080/"+blog_row[0].blog_url
 
-                var data_yn = row[0].my_home
-                // console.log(data_yn)
-                if(data_yn == "Y"){
-                    sql = `select * from blog_table where id = '${session.user[1]}'`
-                    db.query(sql,(err,blog_row)=>{
-                        if(err){
-                            console.log("blog_table",err)
-                        }
-                        var blog_url = "http://localhost:8080/"+blog_row[0].blog_url
+                res.render('contents/main_home', {data:rows,name:session,blog_url:blog_url})
 
-                        res.render('contents/main_home', {data:rows,name:session,data_yn:data_yn,blog_url:blog_url})
-
-                    })
-                }else{
-                    res.render('contents/main_home', {data:rows,name:session,data_yn:data_yn})
-                }
             })
         }else{
             res.render('contents/main_home', {data:rows,name:"0"})

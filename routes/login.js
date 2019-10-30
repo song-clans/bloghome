@@ -35,6 +35,7 @@ passport.serializeUser((user,done)=>{
         user_data[2] = user.displayName
 
     }else if(user.provider=="facebook"){
+        console.log(user)
         user_data[0] = user.displayName;
         user_data[1] = user.emails[0].value;
         user_data[2] = user.displayName;
@@ -92,6 +93,24 @@ router.get('/auth/google/callback', passport.authenticate( 'google', {failureRed
                 params = [session.user[1],cipherpassword,session.user[2],session.user[0]]
 
                 db.query(sql,params)
+
+                var blog_cipher = crypto.createCipher('aes192',"tripco")
+                blog_cipher.update(session.user[1],'utf8','base64');
+                var blog_cipher_id = blog_cipher.final('base64');
+                
+                blog_cipher_id =blog_cipher_id.replace(/\//g,"")
+
+                var blognick_cipher = crypto.createCipher('aes192',"tripco")
+                blognick_cipher.update(session.user[2],'utf8','base64');
+                var blog_cipher_nick = blognick_cipher.final('base64')
+                
+                blog_cipher_nick = blog_cipher_nick.replace(/\//g,"")
+
+                var blog_url = "blog/"+blog_cipher_id+"/"+blog_cipher_nick
+                var blog_sql = "insert into blog_table (id,user_name,blog_name,blog_url,menu,pass_name) values (?,?,?,?,'전체글',?)"
+
+                var blog_params = [session.user[1],session.user[0],session.user[2],blog_url,blog_cipher_id]
+                db.query(blog_sql,blog_params)
             }
             res.render('login/login_ok')
         })
@@ -113,7 +132,8 @@ passport.use(new FacebookStrategy({
 ));
 
 router.get('/auth/facebook', passport.authenticate('facebook', { scope:
-    ['public_profile','email']}),function(req,res){
+    ['public_profile','email','uid']}),function(req,res){
+        
     });
 
 
@@ -135,6 +155,24 @@ router.get('/auth/facebook/callback', passport.authenticate( 'facebook', {failur
                 params = [session.user[1],cipherpassword,session.user[2],session.user[0]]
 
                 db.query(sql,params)
+
+                var blog_cipher = crypto.createCipher('aes192',"tripco")
+                blog_cipher.update(session.user[1],'utf8','base64');
+                var blog_cipher_id = blog_cipher.final('base64');
+                
+                blog_cipher_id =blog_cipher_id.replace(/\//g,"")
+
+                var blognick_cipher = crypto.createCipher('aes192',"tripco")
+                blognick_cipher.update(session.user[2],'utf8','base64');
+                var blog_cipher_nick = blognick_cipher.final('base64')
+                
+                blog_cipher_nick = blog_cipher_nick.replace(/\//g,"")
+
+                var blog_url = "blog/"+blog_cipher_id+"/"+blog_cipher_nick
+                var blog_sql = "insert into blog_table (id,user_name,blog_name,blog_url,menu,pass_name) values (?,?,?,?,'전체글',?)"
+
+                var blog_params = [session.user[1],session.user[0],session.user[2],blog_url,blog_cipher_id]
+                db.query(blog_sql,blog_params)
             }
             res.render('login/login_ok')
         })
@@ -169,7 +207,6 @@ passport.use(new LocalStrategy({
 router.get('/login',(req,res)=>{
     var session_err = req.session.flash;
     var session = req.session.passport;
-    console.log(session_err)
     if(session){
         res.send("이미 로그인 중")
     }else if(session_err){
@@ -181,7 +218,7 @@ router.get('/login',(req,res)=>{
             res.send("아이디 틀림")
         }
     }else{
-        res.render("login/tot_login",{url:req.url})
+        res.render("login/tot_login")
     }
 
 }).post('/login',passport.authenticate('local',{
@@ -231,6 +268,25 @@ router.post('/sign_up', (req, res)=>{
                     console.log(err);
                 }else{
                     console.log("success");
+
+                    var blog_cipher = crypto.createCipher('aes192',"tripco")
+                    blog_cipher.update(req.body.user_id,'utf8','base64');
+                    var blog_cipher_id = blog_cipher.final('base64');
+                    
+                    blog_cipher_id =blog_cipher_id.replace(/\//g,"")
+
+                    var blognick_cipher = crypto.createCipher('aes192',"tripco")
+                    blognick_cipher.update(req.body.user_nickname,'utf8','base64');
+                    var blog_cipher_nick = blognick_cipher.final('base64')
+                    
+                    blog_cipher_nick = blog_cipher_nick.replace(/\//g,"")
+
+                    var blog_url = "blog/"+blog_cipher_id+"/"+blog_cipher_nick
+                    var blog_sql = "insert into blog_table (id,user_name,blog_name,blog_url,menu,pass_name) values (?,?,?,?,'전체글',?)"
+
+                    var blog_params = [req.body.user_id,req.body.user_name,req.body.user_nickname,blog_url,blog_cipher_id]
+                    db.query(blog_sql,blog_params)
+
                     res.redirect("/login");
                 }
             })

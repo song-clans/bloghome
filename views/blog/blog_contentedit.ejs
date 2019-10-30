@@ -73,8 +73,7 @@
 
 <script type="text/javascript">
   function but_click(){
-    var url = location.pathname
-    location.href = "/blog_login"+url
+    window.open("/login","login_form","width=200,hight=200")
   }
 
   // window.onload = function() {
@@ -88,6 +87,7 @@
   
   var form_data = new FormData(document.getElementById('upload_form'))
   var oEditors = [];
+
   nhn.husky.EZCreator.createInIFrame({
   oAppRef: oEditors,
   elPlaceHolder: "popContent",  //textarea ID
@@ -104,6 +104,17 @@
     // var input_test = document.getElementById("edit_file_sel2")
     // input_test.push(test)
     //if(confirm("저장하시겠습니까?")) { // id가 smarteditor인 textarea에 에디터에서 대입
+    var change_text = oEditors.getById["popContent"].getIR()
+    // console.log(change_text)
+    var file_num = change_text.match(/src="([^"]+)/ig)
+  
+    if(file_num){
+      change_text = change_text.replace(/src="([^"]+)/ig,'src=')
+    }
+    oEditors.getById["popContent"].exec("SET_IR",['']);
+    
+    oEditors.getById["popContent"].exec("PASTE_HTML", [change_text]);
+
     oEditors.getById["popContent"].exec("UPDATE_CONTENTS_FIELD", []); 
     // console.log(oEditors.getById["popContent"])
     // 이부분에 에디터 validation 검증

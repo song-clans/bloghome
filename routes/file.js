@@ -72,6 +72,7 @@ router.post('/blog/:user_name/:blog_name/detail/:menu/:page/save_ok',arrupload.a
     var title = req.body.subject
     var body = req.body.popContent
     var title_no = 0
+    var url_text = ""
     if(be_filename){
         body = req.body.popContent.replace(/id([^>]+)/ig,"a")
         for(var i=0; i<image_url.length; i++){
@@ -92,32 +93,39 @@ router.post('/blog/:user_name/:blog_name/detail/:menu/:page/save_ok',arrupload.a
             var be_orgin_filename = be_filename[i].match(/id="([^"]+)/i)
             for(var j=0; j<image_name.length; j++){
                 if(be_orgin_filename[1] == image_name[j]){
+                    url_text = url_text+"|"+image_url[j]
                     body = body.replace(/(img a)/i,`img src="${image_url[j]}" id ="img${j}" name ="img${j}" style="width:auto; height:150px; overflow:hidden;"`)
                 }
             }
         }
     }
     if(title){
-        var sql = "select * from blog_menutable where content_id=? and de_menu =? order by title_no desc"
-        var sel_par = [req.params.user_name,req.params.menu]
+        var sql ="select * from blog_table where pass_name = ?"
+        
+        db.query(sql,req.params.user_name,(err,id)=>{
 
-        db.query(sql,sel_par,(err,row)=>{
-            if(row[0]){
-                title_no = row[0].title_no + 1
-            }else{
-                title_no = 1
-            }
+            sql = "select * from blog_menutable where content_id=? and de_menu =? order by title_no desc"
+            var sel_par = [id[0].id,req.params.menu]
 
-            var blog_detailurl = `/blog/${req.params.user_name}/${req.params.blog_name}/detail/${req.params.menu}/page/${title_no}`
-            // if(session){
-            var param = [req.params.user_name,blog_detailurl,title,body,req.params.menu,title_no,0,image_main,0]
-            sql = "insert into blog_menutable values(?,?,?,?,?,?,?,?,?)"
-            db.query(sql,param)
+            db.query(sql,sel_par,(err,row)=>{
+                if(row[0]){
+                    title_no = row[0].title_no + 1
+                }else{
+                    title_no = 1
+                }
+                var blog_detailurl = `/blog/${req.params.user_name}/${req.params.blog_name}/detail/${req.params.menu}/page/${title_no}`
+                // if(session){
+                var param = [session.user[1],blog_detailurl,title,body,req.params.menu,title_no,0,image_main,('{"lat":"0","lng":"0"}'),url_text,0]
+                sql = "insert into blog_menutable values(?,?,?,?,?,?,?,?,?,?,?)"
+                db.query(sql,param)
 
-            image_main="init"
-            // }
+                image_main="init"
+                // }
+            })
         })
+        
     }
+    
     image_name = []
     image_url = []
     
@@ -175,27 +183,27 @@ router.get("/blog/:user_name/:blog_name/:param",function(req,res){
 
 router.get('/blog/:user_name/:blog_name/detail/:menu/:page/:param', (req, res)=>{
     var session = req.session.passport
-    var menu_params = req.params.menu
 
-    // var params = [req.params.user_name,menu_params]
+    var params = req.params.user_name
 
-    var params = req.params.user_name   //session.user[1]
+
     var param = req.params.param
+
     if(param == 'edit'){
         var re_url = req.url.replace("/edit","/save_ok")
         // var sql ='SELECT * FROM blog_table AS a join blog_menutable AS b ON (a.id = b.id) WHERE a.id = ? AND b.de_menu = ?'
-        var sql = 'select * from blog_table where id =?'
+        var sql = 'select * from blog_table where pass_name =?'
         db.query(sql,params,(err,row)=>{
             if(row[0]){
                 if(session){
                     fs.readFile('/blog_contentedit','utf-8',function(err,data){
-                        res.render('blog/blog_contentedit',{name:session,re_url:re_url,login:params[0],alldata:row[0]});
+                        res.render('blog/blog_contentedit',{name:session,re_url:re_url,alldata:row[0]});
                     })  
                 }else{
                     // fs.readFile('blog/blog_contentedit', function(err,data){
                     //     console.log(data)
                     //     res.writeHead(200,{'Content-Type':'text/html'});
-                    res.render('blog/blog_contentedit',{name:"0",re_url:re_url,login:params[0],alldata:row[0]});
+                    res.render('blog/blog_contentedit',{name:"0",re_url:re_url,alldata:row[0]});
                         // res.end(data)
                     // })
                 }

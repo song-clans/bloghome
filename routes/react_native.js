@@ -73,20 +73,29 @@ router.post('/react_user_save', (req,res)=>{
 })
 
 router.post('/react_test_contents', (req,res)=>{
+    //title_no,view_plus=0,reple_count=0,blog_detaileurl 만들어줘야함
     var email = req.body.email
     var contents = req.body.description
     var title = req.body.title
-    var convertedImg = req.body.convertedImg
-    var lat = req.body.lat
-    var lng = req.body.lng
-    var image = req.body.image
-    var params =[email,contents,image,title,convertedImg,lat,lng]
+    var convertedPhotos = req.body.convertedPhotos
+    var position = {"lat":req.body.lat, "lng":req.body.lng}
+    if (convertedPhotos[0]){
+        var imagephotos = convertedPhotos[0].split(",")
+        for(var i=0; i<imagephotos.length; i++){
+            if(i=0){
+                
+            }
+        }
+    }
+    // var image = req.body.image
+    // var params =[email,contents,title,convertedImg,lat,lng]
 
-    // console.log(req.body)
+    console.log(req.body)
 
-    var sql = 'insert into react_test_content (email,contents,image,title,convertedImg,lat,lng) values (?,?,?,?,?,?,?)'
+
+    // var sql = 'insert into blog_menutable (content_id,blog_detailurl,title,content,de_menu,title_no,view_plus,main_img_url,position,reple_count) values (?,?,?,?,?,?,?,?,?,?)'
     // console.log(sql)
-    db.query(sql,params)
+    // db.query(sql,params)
     // console.log("update ok")
     res.json("ok")
 })
@@ -106,12 +115,93 @@ router.post('/react_content_select', (req,res)=>{
 router.post('/react_native_login',(req,res)=>{
     console.log(req.body)
     if(req.body[0].providerId == "google.com"){
-        console.log("googl")
+        var sql = "select * from blog_table where id =?"
+        
+        db.query(sql,req.body[0].email,(err,row)=>{
+            if(row[0]){
+                console.log("이미 데이터가 있음")
+            }else{
+                console.log("새로 google 들어옴")
+
+                sql = 'insert into user_table (id,password,nickname,name,profile_url) values (?,?,?,?,?)'
+                var cipher = crypto.createCipher('aes192',req.body[0].email)
+                cipher.update("googlelogin",'utf8','base64');
+                var cipherpassword = cipher.final('base64');
+        
+                params = [req.body[0].email,cipherpassword,req.body[0].displayName,req.body[0].displayName,req.body[0].photoURL]
+        
+                db.query(sql,params)
+        
+                var blog_cipher = crypto.createCipher('aes192',"tripco")
+                blog_cipher.update(req.body[0].email,'utf8','base64');
+                var blog_cipher_id = blog_cipher.final('base64');
+                
+                blog_cipher_id =blog_cipher_id.replace(/\//g,"")
+        
+                var blognick_cipher = crypto.createCipher('aes192',"tripco")
+                blognick_cipher.update(req.body[0].displayName,'utf8','base64');
+                var blog_cipher_nick = blognick_cipher.final('base64')
+                
+                blog_cipher_nick = blog_cipher_nick.replace(/\//g,"")
+        
+                var blog_url = "blog/"+blog_cipher_id+"/"+blog_cipher_nick
+                var blog_sql = "insert into blog_table (id,user_name,blog_name,blog_url,menu,pass_name) values (?,?,?,?,'전체글',?)"
+        
+                var blog_params = [req.body[0].email,req.body[0].displayName,req.body[0].displayName,blog_url,blog_cipher_id]
+                db.query(blog_sql,blog_params)
+            }
+        })
+
+
     }else if(req.body[0].providerId == "facebook.com"){
-        console.log("face")
+        // var sql = "select * from blog_table where id =?"
+        
+        // db.query(sql,req.body[0].uid,(err,row)=>{
+        //     if(row[0]){
+        //         console.log("이미 데이터가 있음")
+        //     }
+        //     else{
+
+        //         console.log("새로 facebook 들어옴")
+
+        //         sql = 'insert into user_table (id,password,nickname,name) values (?,?,?,?)'
+        //         var cipher = crypto.createCipher('aes192',req.body[0].uid)
+        //         cipher.update("facebooklogin",'utf8','base64');
+        //         var cipherpassword = cipher.final('base64');
+
+        //         params = [reqp.body[0].uid,cipherpassword,req.body[0].displayName,req.body[0].displayName]
+
+        //         db.query(sql,params)
+
+        //         var blog_cipher = crypto.createCipher('aes192',"tripco")
+        //         blog_cipher.update(req.body[0].uid,'utf8','base64');
+        //         var blog_cipher_id = blog_cipher.final('base64');
+                
+        //         blog_cipher_id =blog_cipher_id.replace(/\//g,"")
+
+        //         var blognick_cipher = crypto.createCipher('aes192',"tripco")
+        //         blognick_cipher.update(req.body[0].displayName,'utf8','base64');
+        //         var blog_cipher_nick = blognick_cipher.final('base64')
+                
+        //         blog_cipher_nick = blog_cipher_nick.replace(/\//g,"")
+
+        //         var blog_url = "blog/"+blog_cipher_id+"/"+blog_cipher_nick
+        //         var blog_sql = "insert into blog_table (id,user_name,blog_name,blog_url,menu,pass_name) values (?,?,?,?,'전체글',?)"
+
+        //         var blog_params = [req.body[0].uid,req.body[0].displayName,req.body[0].displayName,blog_url,blog_cipher_id]
+        //         db.query(blog_sql,blog_params)
+        //     }
+        // })
+        console.log("facebook")
+
     }else{
         console.log("잘못된 경로")
     }
+})
+
+router.post('/react_native_content_save',(req,res)=>{
+    console.log(req.body)
+    //title_no,view_plus=0,reple_count=0,blog_detaileurl 만들어줘야함
 })
 
 module.exports = router;
