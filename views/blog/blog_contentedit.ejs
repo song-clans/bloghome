@@ -14,14 +14,15 @@
 <body>
   <div id ="div_root">
     <div id='blog_top' style="height:180px; width:100%; text-align: center; overflow: hidden;" ><img src='<%=alldata.image_url%>' style = "width:100%; position : relative; top: <%=alldata.image_xpoint %>" /></div>
-    <div id = 'div_menu'>
+
+    <!-- <div id = 'div_menu'>
         <% var menuarray = alldata.menu.split(',');
         for(var i=0; i<menuarray.length;i++) {%>
             <div id = 'menu<%=i%>' name = 'menu<%=i%>' align ='center' style ="cursor:pointer;" onclick="return menu_click('<%=menuarray[i]%>')"><%=menuarray[i] %></div>
         <%};%>
     </div>
     <div id ="div_con">
-    <%if(name == "0"){%>  <!--없애야함-->
+    <%if(name == "0"){%>  
       <div id = "div_bloglogin" class="login" style="cursor: pointer;" onclick="return but_click()">로그인/회원가입</div>
     <% }else{ %>
       <div id = "div_bloglogin" class="login_name"><%= name.user[2] %>님
@@ -29,19 +30,20 @@
           <button type="submit">Logout</button>
         </form>
       </div>
-    <% } %>
+    <% } %>  -->
 
-    <div id ="div_title"><%=alldata.de_menu %></div>
+    <!-- <div id ="div_title"><%=alldata.de_menu %></div> -->
 
     <form action='<%=re_url%>' id="upload_form" method="post" encType="multipart/form-data" runat="server">
     <div id= "preview" style="display: none;"></div>
     <input type="file" id="edit_file_sel" name ="edit_file_sel" style="display:none" accept="image/*" onchange="pasteHTML(this)" multiple />
     <!-- <input type="file" id="edit_file_sel2" name ="edit_file_sel2" style="display:none" accept="image/*" onchange="pasteHTML(this)" multiple /> -->
-    <table class="table table-sm" style="width: 70%; margin-top:50px; margin-left:10px; margin-right:auto;">
+    <table class="table table-sm" style="width: 90%; margin-top:50px; margin-left:10px; margin-right:auto;">
             <tbody>
                   <tr>
                       <th>제목: </th>
                       <td><input type="text" placeholder="제목을 입력하세요. " name="subject" class="form-control"/></td>
+                      
                   </tr>
                   <tr>
                       <th>내용: </th>
@@ -49,7 +51,9 @@
                         <textarea id="popContent" name ="popContent" style="width:100%; height:500px;" cols="10" class="form-control">
             
                         </textarea></td>
+                      
                   </tr>
+            
                   <tr>
                       <td colspan="2">
                           <!-- <input type="submit" value="올리기"> -->
@@ -65,11 +69,19 @@
                   </tr>
             </tbody>
         </table>
+        <table>
+            <tbody>
+                <tr><td><input id="input_box" type="text" placeholder="검색어 입력"> <button type="button" id="button" onclick="map_search()">검색</button></td></tr>
+                <tr><td><div id="googleMap" style="width:700px;height:400px;"></div></td></tr>
+            </tbody>
+        </table>
       </form>
+
   </div>
 
 
 </body>
+<script src="http://maps.googleapis.com/maps/api/js?key=AIzaSyB9TquLrtNi4kyXEQypxdv3psrKdrt6FMI"></script>
 
 <script type="text/javascript">
   function but_click(){
@@ -115,12 +127,14 @@
     
     oEditors.getById["popContent"].exec("PASTE_HTML", [change_text]);
 
-    oEditors.getById["popContent"].exec("UPDATE_CONTENTS_FIELD", []); 
+    oEditors.getById["popContent"].exec("UPDATE_CONTENTS_FIELD", []);
+
     // console.log(oEditors.getById["popContent"])
     // 이부분에 에디터 validation 검증
     document.getElementById("edit_file_sel").value = ""
     var url_val = location.href
     url_val = url_val.replace("edit","save_ok")
+
     $.ajax({
       url:url_val,
       processData : false,
@@ -128,10 +142,12 @@
       data : form_data,
       type : 'POST'
     })
+
     $("#upload_form").submit();
+
   });
 
-  
+
   function pasteHTML(targetObj) {
     var files = targetObj.files;
     
@@ -216,6 +232,111 @@
     // }
 
   }
+    var all_location = new Array()
+    
+    var serach_result = new Array()
+
+    
+    function initialize(serach_text) {
+      
+      var mapOptions = {
+        zoom: 15, // 지도를 띄웠을 때의 줌 크기
+        mapTypeId: google.maps.MapTypeId.ROADMAP,
+        disableDefaultUI: false
+
+      };
+
+
+      var map = new google.maps.Map(document.getElementById("googleMap"), // div의 id과 값이 같아야 함.
+        mapOptions);
+
+      // var size_x = 40; // 마커로 사용할 이미지의 가로 크기
+      // var size_y = 40; // 마커로 사용할 이미지의 세로 크기
+
+      // 마커로 사용할 이미지 주소
+      // var image = new google.maps.MarkerImage('https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m',
+      //   new google.maps.Size(size_x, size_y),
+      //   '',
+      //   '',
+      //   new google.maps.Size(size_x, size_y));
+
+      var geocoder = new google.maps.Geocoder();
+      
+      var address = serach_text; // DB에서 주소 가져와서 검색하거나 왼쪽과 같이 주소를 바로 코딩.
+
+      geocoder.geocode({ 'address': address }, function (results, status) {
+        if (status == google.maps.GeocoderStatus.OK) {
+
+          serach_result.push(results[0])
+
+          for(var i=0; i<serach_result.length; i++){
+            map.setCenter(serach_result[i].geometry.location);
+
+            var marker = new google.maps.Marker({
+              map: map,
+              // icon: image, // 마커로 사용할 이미지(변수)
+              title: address, // 마커에 마우스 포인트를 갖다댔을 때 뜨는 타이틀
+              position: serach_result[i].geometry.location
+              // position: all_location[i].location
+            });
+
+            var infowindow = new google.maps.InfoWindow({ content: serach_result[i].formatted_address });
+
+            infowindow.open(map, marker);
+
+            // google.maps.event.addListener(marker, "click", function () { infowindow.open(map, marker); });
+          }
+        } else {
+          alert("Geocode was not successful for the following reason: " + status);
+        }
+      });
+
+      // Geocoding // *****************************************************
+      google.maps.event.addListener(map, 'click', function (event) {
+        placeMarker(event.latLng, map);
+      });
+      
+
+    }
+
+    function placeMarker(location, map) {
+
+      var marker = new google.maps.Marker({
+        position: location,
+        map: map
+      });
+
+      all_location.push(location)
+
+      var lat = marker.getPosition().lat();
+      var lng = marker.getPosition().lng();
+      var point = lat+","+lng
+
+      initialize(point)
+
+
+      // initialize(serach_text)
+
+
+      // map.setCenter(location);
+
+      // $.ajax({
+      //    url: 'myPHP',
+      //    data: location,
+      //    succes: function(){
+      //      alert('marker was added');
+      //    },
+      //    error: function(){
+      //      alert('에러');
+      //      marker.setMap(null);
+      //    }
+      // });
+    }
+    
+    function map_search() {
+      var serach_text = document.getElementById("input_box").value
+      initialize(serach_text)
+    }
 
 </script>
 

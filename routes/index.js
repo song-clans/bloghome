@@ -77,6 +77,10 @@ router.get('/map2', (req, res)=>{
     res.render('contents/map2');
 });
 
+router.get('/map3', (req, res)=>{
+    res.render('contents/map3');
+});
+
 
 // router.get('/home/:no',(req,res)=>{
 //     var session = req.session.passport

@@ -15,6 +15,11 @@ var image_url = new Array()
 var image_name = new Array()
 var image_main = "init"
 
+function sleep(delay) {
+    var start = new Date().getTime();
+    while (new Date().getTime() < start + delay);
+}
+
 var db = mysql.createConnection({
     host : process.env.DB_HOST,
     port : process.env.DB_PORT,
@@ -73,7 +78,9 @@ router.post('/blog/:user_name/:blog_name/detail/:menu/:page/save_ok',arrupload.a
     var body = req.body.popContent
     var title_no = 0
     var url_text = ""
+    // console.log(body)
     if(be_filename){
+        // console.log("1",be_filename)
         body = req.body.popContent.replace(/id([^>]+)/ig,"a")
         for(var i=0; i<image_url.length; i++){
             be_filename[i] = be_filename[i]+'"'
@@ -90,16 +97,23 @@ router.post('/blog/:user_name/:blog_name/detail/:menu/:page/save_ok',arrupload.a
         // console.log(image_name)
         // console.log(be_filename)
         for(i=0; i<be_filename.length; i++){
+            // console.log("2",be_filename)
             var be_orgin_filename = be_filename[i].match(/id="([^"]+)/i)
             for(var j=0; j<image_name.length; j++){
                 if(be_orgin_filename[1] == image_name[j]){
+                    // console.log("3",image_url[j])
                     url_text = url_text+"|"+image_url[j]
                     body = body.replace(/(img a)/i,`img src="${image_url[j]}" id ="img${j}" name ="img${j}" style="width:auto; height:150px; overflow:hidden;"`)
+                    // console.log("4",body)
+                    sleep(500)
                 }
             }
         }
     }
     if(title){
+        // console.log(sleep_no)
+        // console.log(Number(sleep_no))
+        // console.log("5",body)
         var sql ="select * from blog_table where pass_name = ?"
         
         db.query(sql,req.params.user_name,(err,id)=>{

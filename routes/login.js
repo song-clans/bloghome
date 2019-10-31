@@ -107,9 +107,9 @@ router.get('/auth/google/callback', passport.authenticate( 'google', {failureRed
                 blog_cipher_nick = blog_cipher_nick.replace(/\//g,"")
 
                 var blog_url = "blog/"+blog_cipher_id+"/"+blog_cipher_nick
-                var blog_sql = "insert into blog_table (id,user_name,blog_name,blog_url,menu,pass_name) values (?,?,?,?,'전체글',?)"
+                var blog_sql = "insert into blog_table (id,user_name,blog_name,blog_url,menu,pass_name,nickname) values (?,?,?,?,'전체글',?,?)"
 
-                var blog_params = [session.user[1],session.user[0],session.user[2],blog_url,blog_cipher_id]
+                var blog_params = [session.user[1],session.user[0],session.user[2],blog_url,blog_cipher_id,session.user[2]]
                 db.query(blog_sql,blog_params)
             }
             res.render('login/login_ok')
@@ -169,9 +169,9 @@ router.get('/auth/facebook/callback', passport.authenticate( 'facebook', {failur
                 blog_cipher_nick = blog_cipher_nick.replace(/\//g,"")
 
                 var blog_url = "blog/"+blog_cipher_id+"/"+blog_cipher_nick
-                var blog_sql = "insert into blog_table (id,user_name,blog_name,blog_url,menu,pass_name) values (?,?,?,?,'전체글',?)"
+                var blog_sql = "insert into blog_table (id,user_name,blog_name,blog_url,menu,pass_name,nickname) values (?,?,?,?,'전체글',?,?)"
 
-                var blog_params = [session.user[1],session.user[0],session.user[2],blog_url,blog_cipher_id]
+                var blog_params = [session.user[1],session.user[0],session.user[2],blog_url,blog_cipher_id,session.user[2]]
                 db.query(blog_sql,blog_params)
             }
             res.render('login/login_ok')
@@ -282,9 +282,9 @@ router.post('/sign_up', (req, res)=>{
                     blog_cipher_nick = blog_cipher_nick.replace(/\//g,"")
 
                     var blog_url = "blog/"+blog_cipher_id+"/"+blog_cipher_nick
-                    var blog_sql = "insert into blog_table (id,user_name,blog_name,blog_url,menu,pass_name) values (?,?,?,?,'전체글',?)"
+                    var blog_sql = "insert into blog_table (id,user_name,blog_name,blog_url,menu,pass_name,nickname) values (?,?,?,?,'전체글',?,?)"
 
-                    var blog_params = [req.body.user_id,req.body.user_name,req.body.user_nickname,blog_url,blog_cipher_id]
+                    var blog_params = [req.body.user_id,req.body.user_name,req.body.user_nickname,blog_url,blog_cipher_id,req.body.user_nickname]
                     db.query(blog_sql,blog_params)
 
                     res.redirect("/login");
