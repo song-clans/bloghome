@@ -9,6 +9,7 @@ const dot = require('dotenv');
 dot.config();
 
 AWS.config.loadFromPath(__dirname+"/../config/awsconfig.json")
+
 var s3 = new AWS.S3()
 
 var image_url = new Array()

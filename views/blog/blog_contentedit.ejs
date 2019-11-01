@@ -71,7 +71,7 @@
         </table>
         <table>
             <tbody>
-                <tr><td><input id="input_box" type="text" placeholder="검색어 입력"> <button type="button" id="button" onclick="map_search()">검색</button></td></tr>
+                <tr><td><input id="input_box" type="text" placeholder="지도 검색"> <button type="button" id="input_button" onclick="map_search()">검색</button></td></tr>
                 <tr><td><div id="googleMap" style="width:700px;height:400px;"></div></td></tr>
             </tbody>
         </table>
@@ -235,7 +235,6 @@
     var all_location = new Array()
     
     var serach_result = new Array()
-
     
     function initialize(serach_text) {
       

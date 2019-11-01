@@ -79,14 +79,16 @@ router.post('/react_test_contents', (req,res)=>{
     var title = req.body.title
     var convertedPhotos = req.body.convertedPhotos
     var position = {"lat":req.body.lat, "lng":req.body.lng}
+    var main_image_url
     if (convertedPhotos[0]){
         var imagephotos = convertedPhotos[0].split(",")
         for(var i=0; i<imagephotos.length; i++){
             if(i=0){
-                
+                main_image_url = imagephotos[0]
             }
         }
     }
+    
     // var image = req.body.image
     // var params =[email,contents,title,convertedImg,lat,lng]
 
